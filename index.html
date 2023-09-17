@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
+
+        <title> My NebuleAir sign in </title>
+
+        <link rel="icon" type="image/x-icon" href="https://nebuleair.fr/img/LogoNebuleAirFavIcon.png">
+
+
+        <!-- Boxicons CSS -->
+        <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"> -->
+
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+          <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+       
+          <!-- Fontawesome
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"> -->
+
+
+           <!-- Amcharts -->
+   <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+   <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+   <script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
+   <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+   <script src="https://cdn.amcharts.com/lib/5/plugins/exporting.js"></script>
+ 
+ 
+
+        <style>
+
+/* Google Fonts - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+#container_form{
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #4070f4;
+    column-gap: 30px;
+}
+
+#container_graphs{
+    height: 100vh;
+    width: 100%;
+    /* display: flex; */
+    align-items: center;
+    justify-content: center;
+    background-color:white;
+    column-gap: 30px;
+    display:none;
+}
+
+.form{
+    position: absolute;
+    max-width: 430px;
+    width: 100%;
+    padding: 30px;
+    border-radius: 6px;
+    background: #FFF;
+}
+.form.signup{
+    opacity: 0;
+    pointer-events: none;
+}
+.forms.show-signup .form.signup{
+    opacity: 1;
+    pointer-events: auto;
+}
+.forms.show-signup .form.login{
+    opacity: 0;
+    pointer-events: none;
+}
+header{
+    font-size: 28px;
+    font-weight: 600;
+    color: #232836;
+    text-align: center;
+}
+form{
+    margin-top: 30px;
+}
+.form .field{
+    position: relative;
+    height: 50px;
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 6px;
+}
+.field input,
+.field button{
+    height: 100%;
+    width: 100%;
+    border: none;
+    font-size: 16px;
+    font-weight: 400;
+    border-radius: 6px;
+}
+.field input{
+    outline: none;
+    padding: 0 15px;
+    border: 1px solid#CACACA;
+}
+.field input:focus{
+    border-bottom-width: 2px;
+}
+.eye-icon{
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #8b8b8b;
+    cursor: pointer;
+    padding: 5px;
+}
+.field button{
+    color: #fff;
+    background-color: #0171d3;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.field button:hover{
+    background-color: #016dcb;
+}
+
+.form a{
+    color: #0171d3;
+    text-decoration: none;
+}
+.form-content a:hover{
+    text-decoration: underline;
+}
+
+@media screen and (max-width: 400px) {
+    .form{
+        padding: 20px 10px;
+    }
+    
+}
+
+#map {
+      /* width: 100vW; */
+      height: 500px;
+      padding: 0;
+      margin: 0;
+      /* margin-top: 20px; */
+    }
+
+    .address {
+      cursor: pointer;
+      border: 3px solid #1C6EA4;
+      border-radius: 9px;
+      padding: 5px;
+      margin: 4px;
+      margin-bottom: 8px;
+    }
+
+    .address:hover {
+      background-color: #92A4A2
+    }
+
+    #chartdiv1 {
+        width: 400px;
+        height: 400px;
+        display: inline-flex;
+      }
+
+      #chartdiv2 {
+        width: 400px;
+        height: 400px;
+        display: inline-flex;
+      }
+
+      #chartdiv3 {
+        width: 400px;
+        height: 400px;
+        display: inline-flex;
+      }
+
+
+          </style>
+                        
+    </head>
+    <body>
+        <section id="container_form">
+            <div class="form login">
+                <div class="form-content">
+                    <header><h2 class="fw-bold mb-2">Mon NebuleAir</h2></header>
+                    <p style="text-align: center;">Veuillez entrer le nom du NebuleAir ainsi que son token (indiqué au dos de l'appareil)</p>
+                    <form action="#">
+                        <div class="field input-field">
+                            <input type="text" placeholder="Nom (device ID)" class="input" id="nebuleair">
+                        </div>
+
+                        <div class="field input-field">
+                            <input type="password" placeholder="Token" class="password" id="token">
+                            <i class='bx bx-hide eye-icon'></i>
+                        </div>
+
+                        <div class="field button-field">
+                            <button type="submit" id="submit">Se connecter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="container_graphs">
+
+            <div class="container-fluid">
+
+                <!-- LOGOS TOP -->
+                <div class="row" style="margin-top:20px;">
+                  <div class="col-sm-8">
+                    <a>
+                      <img src="/img/LogoNebuleAir.png" height="50" alt="">
+                    </a>
+                  </div>
+          
+                  <div class="col-sm-4" >
+                    <a style="display: none;">
+                      <img src="/img/LogoAtmoSud.png" class="float-left" height="50" alt="">
+                    </a>
+          
+                    <a>
+                      <img src="/img/logoAirCarto.png" class="float-right" height="50" alt="">
+                    </a>
+                  </div>
+                </div>
+        
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-sm-12">
+                      <div class="card">
+                        <div class="card-body">
+            
+                          <h3 class="card-title">Mes données</h3>
+            
+                            <p>Dernières mesures effectuées par le capteur NebuleAir:  <span id="timestamp"></span> <br><button type="button" onclick="refresh_data()" class="btn btn-outline-secondary btn-sm">Recharger les données</button></p>
+                            
+                            <div class="row">
+            
+                             
+                              <div class="col-sm">
+                                <!-- PM1 -->
+                                <div class="embed-responsive embed-responsive-4by3" id="chartdiv1">
+                                </div>
+                              </div>
+            
+                              <div class="col-sm">
+                                <!-- PM2.5 -->
+                                <div class="embed-responsive embed-responsive-4by3"id="chartdiv2">
+                                </div>
+                              </div>
+            
+                              <div class="col-sm">
+                                <div class="embed-responsive embed-responsive-4by3"id="chartdiv3">
+                                  <!-- PM10 -->
+                                </div>
+                              </div>
+            
+                            </div>
+            
+                            <!-- <br></br> -->
+                       
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+      <!-- HISTORIQUE -->
+      <div class="row" style="margin-top: 20px;">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-body">
+
+              <div id="chartdiv4">
+              </div>
+
+              <div id="chartdiv5">
+              </div>
+
+              <div id="chartdiv6">
+              </div>
+
+              <div id="type">Mesures</div>
+              <span id="buttonPM"></span>
+              <span id="buttonTHP"></span>
+              <span id="buttonCOV"></span>
+              <div id="historique">Historique</div>
+              <span id="button1h"></span>
+              <span id="button3h"></span>
+              <span id="button24h"></span>
+              <span id="button48h"></span>
+              <span id="button1s"></span>
+              <span id="button1m"></span>
+              <div id="pdt">Pas de temps</div>
+              <span id="button2m"></span>
+              <span id="button15m"></span>
+              <span id="button60m"></span>
+              <span id="button1440m"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRAPH -->
+
+      <div class="row" style="margin-top: 20px;">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-body">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAP CONTROL-->
+
+      <div class="row" style="margin-top: 20px;">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Géolocaliser mon capteur</h5>
+
+              <div id="search">
+                <div class="mb-3 row">
+                  <div class="col-8">
+                    <input type="text" name="addr" value="" id="addr" class="form-control" placeholder="Entrez ici l'adresse ou se situe le NebuleAir ou déplacez le curseur sur la carte" />
+                  </div>
+                  <div class="col-4">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addr_search();">Rechercher</button>
+                  </div>
+                </div>
+
+                <div id="results">
+                  <!-- Affichage des résultats de la recherche -->
+                </div>
+
+                <!-- Coordonnées -->
+                <form action="" method="POST" enctype="multipart/form-data">
+                  <div class="mb-3 row">
+                    <div class="col-4">
+                      <input type="text" name="new_lat" id="lat" size=12 value="" class="form-control">
+                    </div>
+                    <div class="col-4">
+                      <input type="text" name="new_lon" id="lon" size=12 value="" class="form-control">
+                    </div>
+                    <div class="col-4">
+                      <input type="submit" name="update_localisation" value="valider" class="btn btn-success" />
+                    </div>
+
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- MAP -->
+
+
+      <div class="row" style="margin-top: 20px;">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-body">
+              <div id="map"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOGOUT BUTTON -->
+
+      <div class="row" style="margin-top: 20px;">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-body">
+              <button type="button" class="btn btn-outline-secondary btn-sm" id="logout">Déconnexion</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+        </section>
+
+        <!-- JavaScript -->
+        <script>
+
+var nebuleair, token;
+var root1, root2, root3;
+var measureType = 'PM';
+var timespanGraph = 2;
+var timeLengthGraph = 3;
+
+const forms = document.querySelector(".forms"),
+      pwShowHide = document.querySelectorAll(".eye-icon");
+
+document.querySelector("#submit").addEventListener("click", submit);
+document.querySelector("#logout").addEventListener("click", reloadPage);
+
+pwShowHide.forEach(eyeIcon => {
+    eyeIcon.addEventListener("click", () => {
+        let pwFields = eyeIcon.parentElement.parentElement.querySelectorAll(".password");
+        
+        pwFields.forEach(password => {
+            if(password.type === "password"){
+                password.type = "text";
+                eyeIcon.classList.replace("bx-hide", "bx-show");
+                return;
+            }
+            password.type = "password";
+            eyeIcon.classList.replace("bx-show", "bx-hide");
+        })
+        
+    })
+})      
+
+
+var map = L.map('map', {
+            zoomControl: false,
+            renderer: L.canvas()
+        });
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 21
+}).addTo(map); 
+
+function submit(){
+
+    nebuleair = document.querySelector("#nebuleair").value;
+    token = document.querySelector("#token").value;
+
+
+console.log("%cNebuleAir 1 sensor", "color: yellow; font-style: bold; background-color: blue;padding: 2px", );
+  const end = new Date();
+  const end_string = end.toISOString();
+  const get_start = end.setHours(end.getHours() - 3);
+  const start = new Date(get_start);
+  const start_string = start.toISOString()
+  console.log(start_string);
+  console.log(end_string);
+
+  console.log("https://aircarto.fr/API_V2/capteurs/dataNebuleAir?capteurID="+ nebuleair + "&start="+start_string + "&end=" +end_string + "&freq=2m");
+
+  $.ajax({
+          method: "GET",
+          url: "https://aircarto.fr/API_V2/capteurs/dataNebuleAir?capteurID="+ nebuleair + "&start="+start_string + "&end=" +end_string + "&freq=2m"
+      }).done(function(data) {
+          console.log(data);
+          if (data != null){
+
+const timestamp_UTC = new Date(data[data.length - 1].time);  // ATTENTION HEURE LOCALE POUR NEBULEAIR
+
+const offset = -(new Date().getTimezoneOffset())/60;
+//const  timestamp_local = new Date(timestamp_UTC.setHours(timestamp_UTC.getHours() + offset));
+
+let date_texte ="";
+if(timestamp_UTC.getDate()< 10){
+  date_texte += "0";
+  date_texte += timestamp_UTC.getDate();
+}else{
+  date_texte += timestamp_UTC.getDate();
+}
+date_texte += "/";
+if((timestamp_UTC.getMonth()+1)< 10){
+  date_texte += "0";
+  date_texte += (timestamp_UTC.getMonth()+1);
+}else{
+  date_texte += (timestamp_UTC.getMonth()+1);
+}
+date_texte += "/";
+date_texte += timestamp_UTC.getFullYear();
+date_texte += ", ";
+if(timestamp_UTC.getHours()< 10){
+  date_texte += "0";
+  date_texte += timestamp_UTC.getHours();
+}else{
+  date_texte += timestamp_UTC.getHours();
+}
+date_texte += ":";
+if(timestamp_UTC.getMinutes()< 10){
+  date_texte += "0";
+  date_texte += timestamp_UTC.getMinutes();
+}else{
+  date_texte += timestamp_UTC.getMinutes();
+}
+date_texte += ":";
+if(timestamp_UTC.getSeconds()< 10){
+  date_texte += "0";
+  date_texte += timestamp_UTC.getSeconds();
+}else{
+  date_texte += timestamp_UTC.getSeconds();
+}
+
+document.querySelector("#timestamp").innerText = date_texte;
+
+            document.querySelector("#container_form").style.display = "none";
+            document.querySelector("#container_graphs").style.display = "block";
+
+            if (root1 != undefined && root2 != undefined && root3 != undefined){
+      console.log("DISPOSE")
+    root1.dispose();
+    root2.dispose();
+    root3.dispose();
+    }
+
+    setTimeout( function() {am5.ready(function() {
+
+    root1 = am5.Root.new("chartdiv1");
+    gaugeCreator(root1,data[data.length - 1],'PM1');
+
+    root2 = am5.Root.new("chartdiv2");
+    gaugeCreator(root2,data[data.length - 1],'PM25');
+
+    root3 = am5.Root.new("chartdiv3");
+    gaugeCreator(root3,data[data.length - 1],'PM10');
+
+    })}, 1000);
+
+    // let coordsCenter = [data[data.length - 1], data[data.length - 1]];  // Marseille
+    // let zoomLevel = 16;
+
+
+    let coordsCenter = [43.29490421, 5.37188392];  // Marseille
+    let zoomLevel = 16;
+
+    map.setView(coordsCenter, zoomLevel);  
+
+    let id = nebuleair.split("-")[1];
+
+    document.getElementById("buttonPM").innerHTML = '<button type="button" onclick="choosePM(\'' + id + '\',1,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">PM</button>';
+    document.getElementById("buttonTHP").innerHTML = '<button type="button" onclick="chooseTHP(\'' + id + '\',3,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">Temp./HR/Press.</button>';
+    document.getElementById("buttonCOV").innerHTML = '<button type="button" onclick="chooseCOV\'' + id + '\',24,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">COV</button>';
+
+    document.getElementById("button1h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',1,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">1h</button>';
+    document.getElementById("button3h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',3,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">3h</button>';
+    document.getElementById("button24h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',24,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">24h</button>';
+    document.getElementById("button48h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',48,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">48h</button>';
+    document.getElementById("button1s").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',168,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">1 semaine</button>';
+    document.getElementById("button1m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',720,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">1 mois</button>';
+    document.getElementById("button2m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',' + timeLengthGraph + ',2)" class="btn btn-outline-secondary btn-sm">2m</button>';
+    document.getElementById("button15m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',' + timeLengthGraph + ',15)" class="btn btn-outline-secondary btn-sm">15m</button>';
+    document.getElementById("button60m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',' + timeLengthGraph + ',60)" class="btn btn-outline-secondary btn-sm">1h</button>';
+    document.getElementById("button1440m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',' + timeLengthGraph + ',1440)" class="btn btn-outline-secondary btn-sm">24h</button>';
+    buttonsSwitcher(timeLengthGraph,timespanGraph);
+  
+  
+  }else{
+
+           // alert
+
+            document.querySelector("#nebuleair").value = "";
+            document.querySelector("#token").value = "";
+
+            // let coordsCenter = [43.29490421, 5.37188392];  // Marseille
+            // let zoomLevel = 16;
+
+
+
+          }
+
+      })
+      .fail(function() {
+          console.log("Error while geting data from Aircarto API");
+          document.querySelector("#nebuleair").value = "";
+          document.querySelector("#token").value = "";
+      });
+}
+
+
+
+function gaugeCreator(root,measure,type){
+
+  console.log(root);
+  console.log(measure);
+  console.log(type);
+
+root.setThemes([
+        am5themes_Animated.new(root)
+      ]);
+      
+      let chart = root.container.children.push(am5radar.RadarChart.new(root, {
+        panX: false,
+        panY: false,
+        startAngle: 160,
+        endAngle: 380
+      }));
+      
+      let axisRenderer = am5radar.AxisRendererCircular.new(root, {
+        innerRadius: -20,
+        minGridDistance: 50
+      });
+
+//       axisRenderer.ticks.template.setAll({
+//   visible: false,
+//   strokeOpacity: 0.5
+// });
+      
+      axisRenderer.grid.template.setAll({
+        stroke: root.interfaceColors.get("background"),
+        visible: false,
+        strokeOpacity: 0.8
+      });
+
+let maximum;
+
+      switch(type) {
+  case "PM1":
+  maximum = 100;
+    break;
+  case "PM25":
+  maximum = 100;
+    break;
+    case "PM10":
+    maximum = 200;
+    break;
+} 
+      
+      let xAxis = chart.xAxes.push(am5xy.ValueAxis.new(root, {
+        maxDeviation: 0,
+        min: 0,
+        max: maximum,
+        strictMinMax: true,
+        renderer: axisRenderer
+      }));
+      
+      let axisDataItem = xAxis.makeDataItem({});
+      
+      let clockHand = am5radar.ClockHand.new(root, {
+        pinRadius: am5.percent(20),
+        radius: am5.percent(35),
+        bottomWidth: 20
+      })
+      
+      let bullet = axisDataItem.set("bullet", am5xy.AxisBullet.new(root, {
+        sprite: clockHand
+      }));
+      
+      xAxis.createAxisRange(axisDataItem);
+      
+      let label = chart.radarContainer.children.push(am5.Label.new(root, {
+        fill: am5.color(0xffffff),
+        centerX: am5.percent(50),
+        textAlign: "center",
+        centerY: am5.percent(50),
+        fontSize: "1em"
+      }));
+      
+      axisDataItem.set("value", 0);
+      bullet.get("sprite").on("rotation", function () {
+        let value = axisDataItem.get("value");
+        let text = Math.round(axisDataItem.get("value")).toString();
+        let fill = am5.color(0x000000);
+        xAxis.axisRanges.each(function (axisRange) {
+          if (value >= axisRange.get("value") && value <= axisRange.get("endValue")) {
+            fill = axisRange.get("axisFill").get("fill");
+          }
+        })
+      
+        // if(value.connected){
+          label.set("text", Math.round(value).toString());
+          // }else{
+          // label.set("text", "N/A");
+          // }
+      
+        clockHand.pin.animate({ key: "fill", to: fill, duration: 500, easing: am5.ease.out(am5.ease.cubic) })
+        clockHand.hand.animate({ key: "fill", to: fill, duration: 500, easing: am5.ease.out(am5.ease.cubic) })
+      });
+
+      // if(value.connected){
+      setTimeout(function () {
+        axisDataItem.animate({
+          key: "value",
+          to: Math.round(measure[type]),
+          duration: 500,
+          easing: am5.ease.out(am5.ease.cubic)
+        });
+      }, 1000)
+
+
+    // }else{
+    //   document.querySelector("#chartdiv1").style.opacity = 0.2;
+    //   document.querySelector("#chartdiv1").style.filter = "alpha(opacity = 20)";
+    // }
+      
+      chart.bulletsContainer.set("mask", undefined);
+
+      // if (type =="PM25"){
+    
+      let bandsData;
+      let title;
+      
+      if (type =="PM25" || type =="PM1"){
+      bandsData = [{
+        // title: "Bon",
+        color: "#4FF0E6",
+        lowScore: 0,
+        highScore: 10
+      }, {
+        // title: "Moyen",
+        color: "#51CCAA",
+        lowScore: 11,
+        highScore: 20
+      }, {
+        // title: "Dégradé",
+        color: "#EDE663",
+        lowScore: 21,
+        highScore: 25
+      }, {
+        // title: "Mauvais",
+        color: "#ED5E58",
+        lowScore: 26,
+        highScore: 50
+      }, {
+        // title: "Très mauvais",
+        color: "#881B33",
+        lowScore: 51,
+        highScore: 75
+      }, {
+        // title: "Extr. mauvais",
+        color: "#74287D",
+        lowScore: 76,
+        highScore: 100
+      }
+    ];
+
+      }
+
+      if (type =="PM10"){
+         bandsData = [{
+                  // title: "Bon",
+                  color: "#4FF0E6",
+                  lowScore: 0,
+                  highScore: 20
+                }, {
+                  // title: "Moyen",
+                  color: "#51CCAA",
+                  lowScore: 21,
+                  highScore: 40
+                }, {
+                  // title: "Dégradé",
+                  color: "#EDE663",
+                  lowScore: 41,
+                  highScore: 50
+                }, {
+                  // title: "Mauvais",
+                  color: "#ED5E58",
+                  lowScore: 51,
+                  highScore: 100
+                }, {
+                  // title: "Très mauvais",
+                  color: "#881B33",
+                  lowScore: 101,
+                  highScore: 150
+                }, {
+                  // title: "Extr. mauvais",
+                  color: "#74287D",
+                  lowScore: 151,
+                  highScore: 200
+                }
+              ];
+
+      }
+          switch(type) {
+  case "PM1":
+    title = "PM1";
+    break;
+  case "PM25":
+  title = "PM2.5";
+    break;
+    case "PM10":
+    title ="PM10";
+    break;
+} 
+
+      am5.array.each(bandsData, function (data) {
+        let axisRange = xAxis.createAxisRange(xAxis.makeDataItem({}));
+
+        axisRange.setAll({
+          value: data.lowScore,
+          endValue: data.highScore
+        });
+      
+        axisRange.get("axisFill").setAll({
+          visible: true,
+          fill: am5.color(data.color),
+          fillOpacity: 1
+        });
+      });
+
+      chart.children.unshift(am5.Label.new(root, {
+        text: "µg/m³",
+        fontSize: 10,
+        textAlign: "center",
+        x: am5.percent(50),
+        centerX: am5.percent(50),
+        paddingTop: 15,
+      }));
+
+      chart.children.unshift(am5.Label.new(root, {
+        text: title,
+        fontSize: 15,
+        fontWeight: "500",
+        textAlign: "center",
+        x: am5.percent(50),
+        centerX: am5.percent(50),
+        paddingTop: 0,
+        paddingBottom: 0
+      }));
+      
+        chart.appear(1000, 100);
+
+    }
+
+
+function refresh_data() {
+  submit();
+}
+
+function chooseTimeNebuleAir(sensor, hours, timespan) {
+            // timeLengthGraph = hours;
+            // timespanGraph = timespan;
+            console.log(sensor);
+            console.log(hours);
+            console.log(timespan);
+            // load1NebuleAir(sensor,timeLengthGraph,timespanGraph);
+            document.getElementById("button1h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',1,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">1h</button>';
+            document.getElementById("button3h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',3,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">3h</button>';
+            document.getElementById("button24h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',24,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">24h</button>';
+            document.getElementById("button48h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',48,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">48h</button>';
+            document.getElementById("button1s").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',168,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">1 semaine</button>';
+            document.getElementById("button1m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',720,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">1 mois</button>';
+            document.getElementById("button2m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',' + timeLengthGraph + ',2)" class="btn btn-outline-secondary btn-sm">2m</button>';
+            document.getElementById("button15m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',' + timeLengthGraph + ',15)" class="btn btn-outline-secondary btn-sm">15m</button>';
+            document.getElementById("button60m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',' + timeLengthGraph + ',60)" class="btn btn-outline-secondary btn-sm">1h</button>';
+            document.getElementById("button1440m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',' + timeLengthGraph + ',1440)" class="btn btn-outline-secondary btn-sm">24h</button>';
+            buttonsSwitcher(hours,timespan);
+        }
+
+
+  function buttonsSwitcher(hours,timespan,type){
+    console.log(hours);
+    console.log(timespan);
+    switch (hours) {
+            case 1:
+                document.getElementById("button1h").children[0].classList.replace("btn-outline-secondary", "btn-secondary");
+                document.getElementById("button3h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button24h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button48h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button1s").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button1m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                break;
+            case 3:
+                document.getElementById("button1h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button3h").children[0].classList.replace("btn-outline-secondary", "btn-secondary");
+                document.getElementById("button24h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button48h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button1s").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button1m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                break;
+            case 24:
+                document.getElementById("button1h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button3h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button24h").children[0].classList.replace("btn-outline-secondary", "btn-secondary");
+                document.getElementById("button48h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button1s").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button1m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                break;
+            case 48:
+                document.getElementById("button1h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button3h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button24h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button48h").children[0].classList.replace("btn-outline-secondary", "btn-secondary");
+                document.getElementById("button1s").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button1m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                break;
+            case 168:
+                document.getElementById("button1h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button3h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button24h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button48h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button1s").children[0].classList.replace("btn-outline-secondary", "btn-secondary");
+                document.getElementById("button1m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                break;
+            case 720:
+                document.getElementById("button1h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button3h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button24h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button48h").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button1s").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button1m").children[0].classList.replace("btn-outline-secondary", "btn-secondary");
+                break;
+            }
+
+            switch (timespan) {
+            case 2:
+                document.getElementById("button2m").children[0].classList.replace("btn-outline-secondary", "btn-secondary");
+                document.getElementById("button15m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button60m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button1440m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                break;
+            case 15:
+                document.getElementById("button2m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button15m").children[0].classList.replace("btn-outline-secondary", "btn-secondary");
+                document.getElementById("button60m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button1440m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                break;
+            case 60:
+                document.getElementById("button2m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button15m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button60m").children[0].classList.replace("btn-outline-secondary", "btn-secondary");
+                document.getElementById("button1440m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                break;
+            case 1440:
+                document.getElementById("button2m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button15m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button60m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
+                document.getElementById("button1440m").children[0].classList.replace("btn-outline-secondary", "btn-secondary");
+                break;
+            }
+}
+
+function reloadPage(){
+
+  location.reload();
+
+}
+
+        </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+    <!-- <script>
+        var tooltipTriggerList = [].slice.call(
+            document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        );
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script> -->
+    </body>
+</html>
