@@ -223,7 +223,6 @@ form{
                 <div class="form-content">
                     <header><h2 class="fw-bold mb-2">Mon NebuleAir</h2></header>
                     <p style="text-align: center;">Veuillez entrer le nom du NebuleAir ainsi que son token (indiqué au dos de l'appareil)</p>
-                    <form action="#">
                         <div class="field input-field">
                             <input type="text" placeholder="Nom (device ID)" class="input" id="nebuleair">
                         </div>
@@ -234,9 +233,8 @@ form{
                         </div>
 
                         <div class="field button-field">
-                            <button type="submit" id="submit">Se connecter</button>
+                            <button id="submit">Se connecter</button>
                         </div>
-                    </form>
                 </div>
             </div>
         </section>
@@ -468,8 +466,6 @@ function submit(){
 
 console.log("%cNebuleAir 1 sensor", "color: yellow; font-style: bold; background-color: blue;padding: 2px", );
 
-  //REFAIRE ICI AVEC METADATA
-
   $.ajax({
           method: "GET",
           url:   "https://aircarto.fr/API_V2/capteurs/metadata?capteurType=NebuleAir&capteurID=" + nebuleair
@@ -552,15 +548,10 @@ if(timestamp_UTC.getSeconds()< 10){
 
     })}, 1000);
 
-    // let coordsCenter = [data[data.length - 1], data[data.length - 1]];  // Marseille
-    // let zoomLevel = 16;
-
-
     let coordsCenter = [data[0].latitude, data[0].longitude];  // Marseille
     let zoomLevel = 16;
 
     map.setView(coordsCenter, zoomLevel);  
-
 
     var myMarker = L.marker([data[0].latitude, data[0].longitude], {
       title: "Coordinates",
