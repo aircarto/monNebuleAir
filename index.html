@@ -271,7 +271,7 @@ form{
             
                           <h3 class="card-title">Mes données</h3>
             
-                            <p>Dernières mesures effectuées par le capteur NebuleAir: <span id="timestamp"></span></p>
+                            <p>Dernières mesures effectuées par le capteur <span id="idn"></span>: <span id="timestamp"></span></p>
                             <p>Niveau de connexion Wifi: <span id="wifilevel"></span></p>
                             <button type="button" onclick="refresh_data()" class="btn btn-outline-secondary btn-sm">Recharger les données</button>
 
@@ -338,7 +338,9 @@ form{
           <div class="card">
             <div class="card-body">
               <div id="chartdiv4"></div>
+              <br>
               <div id="chartdiv5"></div>
+              <br>
               <div id="chartdiv6"></div>
             </div>
           </div>
@@ -520,7 +522,7 @@ if(timestamp_UTC.getSeconds()< 10){
 }else{
   date_texte += timestamp_UTC.getSeconds();
 }
-
+    document.querySelector("#idn").innerText = data[0].sensorId;
     document.querySelector("#timestamp").innerText = date_texte;
 
     console.log(data[0].wifi_signal);
@@ -1451,7 +1453,7 @@ switch(timespan) {
 
 $.ajax({
         method: "GET",
-        url: "https://aircarto.fr/API_V2/capteurs/dataNebuleAir?capteurID="+ nebuleair + "&start="+start_string + "&end=" +end_string + "&freq=2m"
+        url: "https://aircarto.fr/API_V2/capteurs/dataNebuleAir?capteurID="+ nebuleair + "&start="+start_string + "&end=" +end_string + "&freq= "+ timespan
     }).done(function(data) {
         console.log(data);
         if (data != null){
