@@ -196,6 +196,23 @@ form{
         display: inline-flex;
       }
 
+      #chartdiv4{
+        width: 100%;
+        height: 500px;
+        max-width: 100%;
+      }
+
+      #chartdiv5{
+        width: 100%;
+        height: 500px;
+        max-width: 100%;
+      }
+
+      #chartdiv6{
+        width: 100%;
+        height: 500px;
+        max-width: 100%;
+      }
 
           </style>
                         
@@ -254,8 +271,10 @@ form{
             
                           <h3 class="card-title">Mes données</h3>
             
-                            <p>Dernières mesures effectuées par le capteur NebuleAir:  <span id="timestamp"></span> <br><button type="button" onclick="refresh_data()" class="btn btn-outline-secondary btn-sm">Recharger les données</button></p>
-                            
+                            <p>Dernières mesures effectuées par le capteur NebuleAir: <span id="timestamp"></span></p>
+                            <p>Niveau de connexion Wifi: <span id="wifilevel"></span></p>
+                            <button type="button" onclick="refresh_data()" class="btn btn-outline-secondary btn-sm">Recharger les données</button>
+
                             <div class="row">
             
                              
@@ -291,16 +310,6 @@ form{
         <div class="col-sm-12">
           <div class="card">
             <div class="card-body">
-
-              <div id="chartdiv4">
-              </div>
-
-              <div id="chartdiv5">
-              </div>
-
-              <div id="chartdiv6">
-              </div>
-
               <div id="type">Mesures</div>
               <span id="buttonPM"></span>
               <span id="buttonTHP"></span>
@@ -328,6 +337,9 @@ form{
         <div class="col-sm-12">
           <div class="card">
             <div class="card-body">
+              <div id="chartdiv4"></div>
+              <div id="chartdiv5"></div>
+              <div id="chartdiv6"></div>
             </div>
           </div>
         </div>
@@ -356,7 +368,6 @@ form{
                 </div>
 
                 <!-- Coordonnées -->
-                <form action="" method="POST" enctype="multipart/form-data">
                   <div class="mb-3 row">
                     <div class="col-4">
                       <input type="text" name="new_lat" id="lat" size=12 value="" class="form-control">
@@ -365,11 +376,9 @@ form{
                       <input type="text" name="new_lon" id="lon" size=12 value="" class="form-control">
                     </div>
                     <div class="col-4">
-                      <input type="submit" name="update_localisation" value="valider" class="btn btn-success" />
+                      <button type="button" id="updateLoc" class="btn btn-success">Valider</button>
                     </div>
-
                   </div>
-                </form>
               </div>
             </div>
           </div>
@@ -409,7 +418,8 @@ form{
         <script>
 
 var nebuleair, token;
-var root1, root2, root3;
+var root1, root2, root3, root4, root5, root6;
+
 var measureType = 'PM';
 var timespanGraph = 2;
 var timeLengthGraph = 3;
@@ -419,6 +429,7 @@ const forms = document.querySelector(".forms"),
 
 document.querySelector("#submit").addEventListener("click", submit);
 document.querySelector("#logout").addEventListener("click", reloadPage);
+document.querySelector("#updateLoc").addEventListener("click", updateLocation);
 
 pwShowHide.forEach(eyeIcon => {
     eyeIcon.addEventListener("click", () => {
@@ -453,26 +464,21 @@ function submit(){
     nebuleair = document.querySelector("#nebuleair").value;
     token = document.querySelector("#token").value;
 
-
 console.log("%cNebuleAir 1 sensor", "color: yellow; font-style: bold; background-color: blue;padding: 2px", );
-  const end = new Date();
-  const end_string = end.toISOString();
-  const get_start = end.setHours(end.getHours() - 3);
-  const start = new Date(get_start);
-  const start_string = start.toISOString()
-  console.log(start_string);
-  console.log(end_string);
 
-  console.log("https://aircarto.fr/API_V2/capteurs/dataNebuleAir?capteurID="+ nebuleair + "&start="+start_string + "&end=" +end_string + "&freq=2m");
+  //REFAIRE ICI AVEC METADATA
 
   $.ajax({
           method: "GET",
-          url: "https://aircarto.fr/API_V2/capteurs/dataNebuleAir?capteurID="+ nebuleair + "&start="+start_string + "&end=" +end_string + "&freq=2m"
+          url:   "https://aircarto.fr/API_V2/capteurs/metadata?capteurType=NebuleAir&capteurID=" + nebuleair
       }).done(function(data) {
           console.log(data);
           if (data != null){
 
-const timestamp_UTC = new Date(data[data.length - 1].time);  // ATTENTION HEURE LOCALE POUR NEBULEAIR
+const timestamp_UTC = new Date(data[0].time);  // ATTENTION HEURE LOCALE POUR NEBULEAIR
+
+document.querySelector("#lat").value = data[0].latitude;
+document.querySelector("#lon").value = data[0].longitude;
 
 const offset = -(new Date().getTimezoneOffset())/60;
 //const  timestamp_local = new Date(timestamp_UTC.setHours(timestamp_UTC.getHours() + offset));
@@ -515,13 +521,17 @@ if(timestamp_UTC.getSeconds()< 10){
   date_texte += timestamp_UTC.getSeconds();
 }
 
-document.querySelector("#timestamp").innerText = date_texte;
+    document.querySelector("#timestamp").innerText = date_texte;
 
-            document.querySelector("#container_form").style.display = "none";
-            document.querySelector("#container_graphs").style.display = "block";
+    console.log(data[0].wifi_signal);
 
-            if (root1 != undefined && root2 != undefined && root3 != undefined){
-      console.log("DISPOSE")
+    let wifiLevel = 2 * (parseInt(data[0].wifi_signal) + 100);
+    document.querySelector("#wifilevel").innerText = wifiLevel + " %";
+
+    document.querySelector("#container_form").style.display = "none";
+    document.querySelector("#container_graphs").style.display = "block";
+
+    if (root1 != undefined && root2 != undefined && root3 != undefined){
     root1.dispose();
     root2.dispose();
     root3.dispose();
@@ -530,13 +540,13 @@ document.querySelector("#timestamp").innerText = date_texte;
     setTimeout( function() {am5.ready(function() {
 
     root1 = am5.Root.new("chartdiv1");
-    gaugeCreator(root1,data[data.length - 1],'PM1');
+    gaugeCreator(root1,data[0],'PM1');
 
     root2 = am5.Root.new("chartdiv2");
-    gaugeCreator(root2,data[data.length - 1],'PM25');
+    gaugeCreator(root2,data[0],'PM25');
 
     root3 = am5.Root.new("chartdiv3");
-    gaugeCreator(root3,data[data.length - 1],'PM10');
+    gaugeCreator(root3,data[0],'PM10');
 
     })}, 1000);
 
@@ -544,17 +554,37 @@ document.querySelector("#timestamp").innerText = date_texte;
     // let zoomLevel = 16;
 
 
-    let coordsCenter = [43.29490421, 5.37188392];  // Marseille
+    let coordsCenter = [data[0].latitude, data[0].longitude];  // Marseille
     let zoomLevel = 16;
 
     map.setView(coordsCenter, zoomLevel);  
 
+
+    var myMarker = L.marker([data[0].latitude, data[0].longitude], {
+      title: "Coordinates",
+      alt: "Coordinates",
+      draggable: true
+    }).addTo(map).on('dragend', function() {
+      var lat = myMarker.getLatLng().lat.toFixed(8);
+      var lon = myMarker.getLatLng().lng.toFixed(8);
+      var czoom = map.getZoom();
+      if (czoom < 18) {
+        nzoom = czoom + 2;
+      }
+      if (nzoom > 18) {
+        nzoom = 18;
+      }
+      if (czoom != 18) {
+        map.setView([lat, lon], nzoom);
+      } else {
+        map.setView([lat, lon]);
+      }
+      document.getElementById('lat').value = lat;
+      document.getElementById('lon').value = lon;
+      myMarker.bindPopup("Lat " + lat + "<br />Lon " + lon).openPopup();
+    });
+
     let id = nebuleair.split("-")[1];
-
-    document.getElementById("buttonPM").innerHTML = '<button type="button" onclick="choosePM(\'' + id + '\',1,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">PM</button>';
-    document.getElementById("buttonTHP").innerHTML = '<button type="button" onclick="chooseTHP(\'' + id + '\',3,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">Temp./HR/Press.</button>';
-    document.getElementById("buttonCOV").innerHTML = '<button type="button" onclick="chooseCOV\'' + id + '\',24,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">COV</button>';
-
     document.getElementById("button1h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',1,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">1h</button>';
     document.getElementById("button3h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',3,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">3h</button>';
     document.getElementById("button24h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',24,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">24h</button>';
@@ -566,20 +596,48 @@ document.querySelector("#timestamp").innerText = date_texte;
     document.getElementById("button60m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',' + timeLengthGraph + ',60)" class="btn btn-outline-secondary btn-sm">1h</button>';
     document.getElementById("button1440m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',' + timeLengthGraph + ',1440)" class="btn btn-outline-secondary btn-sm">24h</button>';
     buttonsSwitcher(timeLengthGraph,timespanGraph);
-  
+
+
+  const end = new Date();
+  const end_string = end.toISOString();
+  const get_start = end.setHours(end.getHours() - 3);
+  const start = new Date(get_start);
+  const start_string = start.toISOString()
+  console.log(start_string);
+  console.log(end_string);
+
+    $.ajax({
+          method: "GET",
+          url: "https://aircarto.fr/API_V2/capteurs/dataNebuleAir?capteurID="+ nebuleair + "&start="+start_string + "&end=" +end_string + "&freq=2m"
+      }).done(function(data) {
+          console.log(data);
+
+    if (root4 != undefined && root5 != undefined && root6 != undefined){
+    root4.dispose();
+    root5.dispose();
+    root6.dispose();
+    }
+
+    setTimeout( function() {am5.ready(function() {
+    root4 = am5.Root.new("chartdiv4");
+    graphCreator(root4,data,'PM',timespanGraph,data[0].sensorId);
+
+    root5 = am5.Root.new("chartdiv5");
+    graphCreator(root5,data,'THP',timespanGraph,data[0].sensorId);
+
+    root6 = am5.Root.new("chartdiv6");
+    graphCreator(root6,data,'COV',timespanGraph,data[0].sensorId);
+    })}, 1000);
+      
+      
+    }).fail(function() {
+          console.log("Error while geting data from Aircarto API");
+      });  
   
   }else{
-
            // alert
-
             document.querySelector("#nebuleair").value = "";
             document.querySelector("#token").value = "";
-
-            // let coordsCenter = [43.29490421, 5.37188392];  // Marseille
-            // let zoomLevel = 16;
-
-
-
           }
 
       })
@@ -590,6 +648,529 @@ document.querySelector("#timestamp").innerText = date_texte;
       });
 }
 
+
+
+function graphCreator(root,data,type,timespan,id){
+
+  let data_PM1 = data.map(function(e){
+              return {value:e.PM1, date:new Date(e.time).getTime()}
+          } );
+    let data_PM25 = data.map(function(e){
+              return {value:e.PM25, date:new Date(e.time).getTime()}
+          } );
+    let data_PM10 = data.map(function(e){
+              return {value:e.PM10, date:new Date(e.time).getTime()}
+    } );
+
+    let data_T = data.map(function(e){
+              return {value:e.TEMP, date:new Date(e.time).getTime()}
+    } );
+
+    let data_H = data.map(function(e){
+              return {value:e.HUM, date:new Date(e.time).getTime()}
+    } );
+
+    let data_P = data.map(function(e){
+              return {value:e.PRESS, date:new Date(e.time).getTime()}
+    } );
+
+    let data_COV = data.map(function(e){
+              return {value:e.COV, date:new Date(e.time).getTime()}
+    } );
+
+    let idTitre = id.split("-")[1];
+
+
+    let chartTitleText = "";
+  chartTitleText += "NebuleAir-" + idTitre + ", ";
+
+  switch(timespan) {
+    case 2:
+      chartTitleText += "mesures à 2 minutes, ";
+        break;
+    case 15:
+      chartTitleText += "moyennes quart-horaires, ";
+        break;
+    case 60:
+      chartTitleText += "moyennes horaires, ";
+        break;
+    case 1440:
+      chartTitleText += "moyennes journalières, ";
+        break;
+    } 
+
+  if (type == 'PM'){
+
+    chartTitleText += "µg/m3";
+
+
+                  // Set themes
+                  // https://www.amcharts.com/docs/v5/concepts/themes/ 
+                  root.setThemes([
+                      am5themes_Animated.new(root)
+                  ]);
+
+                  // Create chart
+                  // https://www.amcharts.com/docs/v5/charts/xy-chart/
+                  let chart = root.container.children.push(am5xy.XYChart.new(root, {
+                      panX: true,
+                      panY: true,
+                      wheelX: "panX",
+                      wheelY: "zoomX",
+                      maxTooltipDistance: 0,
+                      pinchZoomX: true
+                  }));
+
+                  // Create axes
+                  // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+                  let xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
+                      maxDeviation: 0.2,
+                      baseInterval: {
+                          timeUnit: "minute",
+                          count: 1
+                      },
+                      renderer: am5xy.AxisRendererX.new(root, {}),
+                      tooltip: am5.Tooltip.new(root, {})
+                  }));
+
+                  let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                      renderer: am5xy.AxisRendererY.new(root, {})
+                  }));
+
+                  let series_PM1 = chart.series.push(am5xy.LineSeries.new(root, {
+                          name: "PM1",
+                          xAxis: xAxis,
+                          yAxis: yAxis,
+                          valueYField: "value",
+                          valueXField: "date",
+                          legendValueText: "{valueY}",
+                          tooltip: am5.Tooltip.new(root, {
+                              pointerOrientation: "horizontal",
+                              labelText: "{valueY}"
+                          })
+                      }));
+
+                  series_PM1.data.setAll(data_PM1);
+                  series_PM1.appear();
+
+                  let series_PM25 = chart.series.push(am5xy.LineSeries.new(root, {
+                          name: "PM2.5",
+                          xAxis: xAxis,
+                          yAxis: yAxis,
+                          valueYField: "value",
+                          valueXField: "date",
+                          legendValueText: "{valueY}",
+                          tooltip: am5.Tooltip.new(root, {
+                              pointerOrientation: "horizontal",
+                              labelText: "{valueY}"
+                          })
+                      }));
+
+                  series_PM25.data.setAll(data_PM25);
+                  series_PM25.appear();
+
+
+                  let series_PM10 = chart.series.push(am5xy.LineSeries.new(root, {
+                          name: "PM10",
+                          xAxis: xAxis,
+                          yAxis: yAxis,
+                          valueYField: "value",
+                          valueXField: "date",
+                          legendValueText: "{valueY}",
+                          tooltip: am5.Tooltip.new(root, {
+                              pointerOrientation: "horizontal",
+                              labelText: "{valueY}"
+                          })
+                      }));
+
+                  series_PM10.data.setAll(data_PM10);
+                  series_PM10.appear();
+
+                  // Add cursor
+                  // https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+                  var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+                      behavior: "none"
+                  }));
+                  cursor.lineY.set("visible", false);
+
+                  var legend = chart.bottomAxesContainer.children.push(am5.Legend.new(root, {
+                    width: 400,
+                    height: am5.percent(20),
+                    layout: root.horizontalLayout,
+                }));
+
+
+                  // When legend item container is hovered, dim all the series except the hovered one
+                  legend.itemContainers.template.events.on("pointerover", function(e) {
+                      var itemContainer = e.target;
+
+                      // As series list is data of a legend, dataContext is series
+                      var series = itemContainer.dataItem.dataContext;
+
+                      chart.series.each(function(chartSeries) {
+                          if (chartSeries != series) {
+                              chartSeries.strokes.template.setAll({
+                                  strokeOpacity: 0.15,
+                                  stroke: am5.color(0x000000)
+                              });
+                          } else {
+                              chartSeries.strokes.template.setAll({
+                                  strokeWidth: 3
+                              });
+                          }
+                      })
+                  })
+
+                  // When legend item container is unhovered, make all series as they are
+                  legend.itemContainers.template.events.on("pointerout", function(e) {
+                      var itemContainer = e.target;
+                      var series = itemContainer.dataItem.dataContext;
+
+                      chart.series.each(function(chartSeries) {
+                          chartSeries.strokes.template.setAll({
+                              strokeOpacity: 1,
+                              strokeWidth: 1,
+                              stroke: chartSeries.get("fill")
+                          });
+                      });
+                  })
+
+                  legend.itemContainers.template.set("width", am5.p100);
+                  legend.valueLabels.template.setAll({
+                      width: am5.p100,
+                      textAlign: "right"
+                  });
+
+                  // It's is important to set legend data after all the events are set on template, otherwise events won't be copied
+                  legend.data.setAll(chart.series.values);
+
+                  chart.children.unshift(am5.Label.new(root, {
+                    text: chartTitleText,
+                    fontSize: 14,
+                    textAlign: "center",
+                    x: am5.percent(50),
+                    centerX: am5.percent(50)
+                  }));
+
+                  var exporting = am5plugins_exporting.Exporting.new(root, {
+menu: am5plugins_exporting.ExportingMenu.new(root, {}),
+dataSource: data
+});
+
+                  // Make stuff animate on load
+                  // https://www.amcharts.com/docs/v5/concepts/animations/
+                  chart.appear(1000, 100);
+
+  
+  }
+
+  if (type == 'THP'){
+
+    chartTitleText += "°,%,hPa";
+
+
+      // Set themes
+                  // https://www.amcharts.com/docs/v5/concepts/themes/ 
+                  root.setThemes([
+                      am5themes_Animated.new(root)
+                  ]);
+
+                  // Create chart
+                  // https://www.amcharts.com/docs/v5/charts/xy-chart/
+                  let chart = root.container.children.push(am5xy.XYChart.new(root, {
+                      panX: true,
+                      panY: true,
+                      wheelX: "panX",
+                      wheelY: "zoomX",
+                      maxTooltipDistance: 0,
+                      pinchZoomX: true
+                  }));
+
+                  // Create axes
+                  // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+                  let xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
+                      maxDeviation: 0.2,
+                      baseInterval: {
+                          timeUnit: "minute",
+                          count: 1
+                      },
+                      renderer: am5xy.AxisRendererX.new(root, {}),
+                      tooltip: am5.Tooltip.new(root, {})
+                  }));
+
+                  let yAxisT = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                      renderer: am5xy.AxisRendererY.new(root, {})
+                  }));
+
+                  let yAxisH = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                      renderer: am5xy.AxisRendererY.new(root, {})
+                  }));
+
+                  let yAxisP = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                      renderer: am5xy.AxisRendererY.new(root, {})
+                  }));
+
+                  let series_T = chart.series.push(am5xy.LineSeries.new(root, {
+                          name: "Temp.",
+                          xAxis: xAxis,
+                          yAxis: yAxisT,
+                          valueYField: "value",
+                          valueXField: "date",
+                          legendValueText: "{valueY}",
+                          tooltip: am5.Tooltip.new(root, {
+                              pointerOrientation: "horizontal",
+                              labelText: "{valueY}"
+                          })
+                      }));
+
+                      series_T.data.setAll(data_T);
+                      series_T.appear();
+
+                  let series_H = chart.series.push(am5xy.LineSeries.new(root, {
+                          name: "Hum. rel.",
+                          xAxis: xAxis,
+                          yAxis: yAxisH,
+                          valueYField: "value",
+                          valueXField: "date",
+                          legendValueText: "{valueY}",
+                          tooltip: am5.Tooltip.new(root, {
+                              pointerOrientation: "horizontal",
+                              labelText: "{valueY}"
+                          })
+                      }));
+
+                      series_H.data.setAll(data_H);
+                      series_H.appear();
+
+
+                  let series_P = chart.series.push(am5xy.LineSeries.new(root, {
+                          name: "Press.",
+                          xAxis: xAxis,
+                          yAxis: yAxisP,
+                          valueYField: "value",
+                          valueXField: "date",
+                          legendValueText: "{valueY}",
+                          tooltip: am5.Tooltip.new(root, {
+                              pointerOrientation: "horizontal",
+                              labelText: "{valueY}"
+                          })
+                      }));
+
+                  series_P.data.setAll(data_P);
+                  series_P.appear();
+
+                  // Add cursor
+                  // https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+                  var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+                      behavior: "none"
+                  }));
+                  cursor.lineY.set("visible", false);
+
+                  var legend = chart.bottomAxesContainer.children.push(am5.Legend.new(root, {
+                    width: 400,
+                    height: am5.percent(20),
+                    layout: root.horizontalLayout,
+                }));
+
+
+                  // When legend item container is hovered, dim all the series except the hovered one
+                  legend.itemContainers.template.events.on("pointerover", function(e) {
+                      var itemContainer = e.target;
+
+                      // As series list is data of a legend, dataContext is series
+                      var series = itemContainer.dataItem.dataContext;
+
+                      chart.series.each(function(chartSeries) {
+                          if (chartSeries != series) {
+                              chartSeries.strokes.template.setAll({
+                                  strokeOpacity: 0.15,
+                                  stroke: am5.color(0x000000)
+                              });
+                          } else {
+                              chartSeries.strokes.template.setAll({
+                                  strokeWidth: 3
+                              });
+                          }
+                      })
+                  })
+
+                  // When legend item container is unhovered, make all series as they are
+                  legend.itemContainers.template.events.on("pointerout", function(e) {
+                      var itemContainer = e.target;
+                      var series = itemContainer.dataItem.dataContext;
+
+                      chart.series.each(function(chartSeries) {
+                          chartSeries.strokes.template.setAll({
+                              strokeOpacity: 1,
+                              strokeWidth: 1,
+                              stroke: chartSeries.get("fill")
+                          });
+                      });
+                  })
+
+                  legend.itemContainers.template.set("width", am5.p100);
+                  legend.valueLabels.template.setAll({
+                      width: am5.p100,
+                      textAlign: "right"
+                  });
+
+                  // It's is important to set legend data after all the events are set on template, otherwise events won't be copied
+                  legend.data.setAll(chart.series.values);
+
+                  chart.children.unshift(am5.Label.new(root, {
+                    text: chartTitleText,
+                    fontSize: 14,
+                    textAlign: "center",
+                    x: am5.percent(50),
+                    centerX: am5.percent(50)
+                  }));
+
+                  var exporting = am5plugins_exporting.Exporting.new(root, {
+menu: am5plugins_exporting.ExportingMenu.new(root, {}),
+dataSource: data
+});
+
+                  // Make stuff animate on load
+                  // https://www.amcharts.com/docs/v5/concepts/animations/
+                  chart.appear(1000, 100);
+
+
+
+
+
+}
+
+if (type == 'COV'){  //FILTRER LE -1.0 ?
+  chartTitleText += "ppb";
+
+                  // Set themes
+                  // https://www.amcharts.com/docs/v5/concepts/themes/ 
+                  root.setThemes([
+                      am5themes_Animated.new(root)
+                  ]);
+
+                  // Create chart
+                  // https://www.amcharts.com/docs/v5/charts/xy-chart/
+                  let chart = root.container.children.push(am5xy.XYChart.new(root, {
+                      panX: true,
+                      panY: true,
+                      wheelX: "panX",
+                      wheelY: "zoomX",
+                      maxTooltipDistance: 0,
+                      pinchZoomX: true
+                  }));
+
+                  // Create axes
+                  // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+                  let xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
+                      maxDeviation: 0.2,
+                      baseInterval: {
+                          timeUnit: "minute",
+                          count: 1
+                      },
+                      renderer: am5xy.AxisRendererX.new(root, {}),
+                      tooltip: am5.Tooltip.new(root, {})
+                  }));
+
+                  let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                      renderer: am5xy.AxisRendererY.new(root, {})
+                  }));
+
+                  let series_COV = chart.series.push(am5xy.LineSeries.new(root, {
+                          name: "COV",
+                          xAxis: xAxis,
+                          yAxis: yAxis,
+                          valueYField: "value",
+                          valueXField: "date",
+                          legendValueText: "{valueY}",
+                          tooltip: am5.Tooltip.new(root, {
+                              pointerOrientation: "horizontal",
+                              labelText: "{valueY}"
+                          })
+                      }));
+
+                      series_COV.data.setAll(data_COV);
+                      series_COV.appear();
+
+                  // Add cursor
+                  // https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+                  var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+                      behavior: "none"
+                  }));
+                  cursor.lineY.set("visible", false);
+
+                  var legend = chart.bottomAxesContainer.children.push(am5.Legend.new(root, {
+                    width: 400,
+                    height: am5.percent(20),
+                    layout: root.horizontalLayout,
+                }));
+
+
+                  // When legend item container is hovered, dim all the series except the hovered one
+                  legend.itemContainers.template.events.on("pointerover", function(e) {
+                      var itemContainer = e.target;
+
+                      // As series list is data of a legend, dataContext is series
+                      var series = itemContainer.dataItem.dataContext;
+
+                      chart.series.each(function(chartSeries) {
+                          if (chartSeries != series) {
+                              chartSeries.strokes.template.setAll({
+                                  strokeOpacity: 0.15,
+                                  stroke: am5.color(0x000000)
+                              });
+                          } else {
+                              chartSeries.strokes.template.setAll({
+                                  strokeWidth: 3
+                              });
+                          }
+                      })
+                  })
+
+                  // When legend item container is unhovered, make all series as they are
+                  legend.itemContainers.template.events.on("pointerout", function(e) {
+                      var itemContainer = e.target;
+                      var series = itemContainer.dataItem.dataContext;
+
+                      chart.series.each(function(chartSeries) {
+                          chartSeries.strokes.template.setAll({
+                              strokeOpacity: 1,
+                              strokeWidth: 1,
+                              stroke: chartSeries.get("fill")
+                          });
+                      });
+                  })
+
+                  legend.itemContainers.template.set("width", am5.p100);
+                  legend.valueLabels.template.setAll({
+                      width: am5.p100,
+                      textAlign: "right"
+                  });
+
+                  // It's is important to set legend data after all the events are set on template, otherwise events won't be copied
+                  legend.data.setAll(chart.series.values);
+
+                  chart.children.unshift(am5.Label.new(root, {
+                    text: chartTitleText,
+                    fontSize: 14,
+                    textAlign: "center",
+                    x: am5.percent(50),
+                    centerX: am5.percent(50)
+                  }));
+
+                  var exporting = am5plugins_exporting.Exporting.new(root, {
+menu: am5plugins_exporting.ExportingMenu.new(root, {}),
+dataSource: data
+});
+
+                  // Make stuff animate on load
+                  // https://www.amcharts.com/docs/v5/concepts/animations/
+                  chart.appear(1000, 100);
+
+
+}
+
+}
 
 
 function gaugeCreator(root,measure,type){
@@ -835,35 +1416,100 @@ let maximum;
 
     }
 
+function reloadDataSensor(id,hours,timespan){
+
+console.log("%cNebuleAir 1 sensor", "color: yellow; font-style: bold; background-color: blue;padding: 2px", );
+
+console.log(id);
+console.log(hours);
+console.log(timespan);
+
+const end = new Date();
+const end_string = end.toISOString();
+const get_start = end.setHours(end.getHours() - hours);
+const start = new Date(get_start);
+const start_string = start.toISOString()
+console.log(start_string);
+console.log(end_string);
+
+switch(timespan) {
+  case 2:
+      timespan = "2m";
+      break;
+  case 15:
+      timespan = "15m";
+      break;
+  case 60:
+      timespan = "1h";
+      break;
+  case 1440:
+      timespan = "1d";
+      break;
+  } 
+
+  console.log("https://aircarto.fr/API_V2/capteurs/dataNebuleAir?capteurID="+ nebuleair + "&start="+start_string + "&end=" +end_string + "&freq="+ timespan);
+
+$.ajax({
+        method: "GET",
+        url: "https://aircarto.fr/API_V2/capteurs/dataNebuleAir?capteurID="+ nebuleair + "&start="+start_string + "&end=" +end_string + "&freq=2m"
+    }).done(function(data) {
+        console.log(data);
+        if (data != null){
+
+  if (root4 != undefined && root5 != undefined && root6 != undefined){
+  root4.dispose();
+  root5.dispose();
+  root6.dispose();
+  }
+
+  setTimeout( function() {am5.ready(function() {
+
+  root4 = am5.Root.new("chartdiv4");
+  graphCreator(root4,data,'PM',timespanGraph,data[data.length - 1].sensorId);
+
+  root5 = am5.Root.new("chartdiv5");
+  graphCreator(root5,data,'THP',timespanGraph,data[data.length - 1].sensorId);
+
+  root6 = am5.Root.new("chartdiv6");
+  graphCreator(root6,data,'COV',timespanGraph,data[data.length - 1].sensorId);
+
+  })}, 1000);
+
+}else{
+
+         // alert
+        }
+
+    })
+    .fail(function() {
+        console.log("Error while geting data from Aircarto API");
+    });
+}
+
 
 function refresh_data() {
   submit();
 }
 
-function chooseTimeNebuleAir(sensor, hours, timespan) {
-            // timeLengthGraph = hours;
-            // timespanGraph = timespan;
-            console.log(sensor);
-            console.log(hours);
-            console.log(timespan);
-            // load1NebuleAir(sensor,timeLengthGraph,timespanGraph);
-            document.getElementById("button1h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',1,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">1h</button>';
-            document.getElementById("button3h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',3,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">3h</button>';
-            document.getElementById("button24h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',24,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">24h</button>';
-            document.getElementById("button48h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',48,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">48h</button>';
-            document.getElementById("button1s").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',168,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">1 semaine</button>';
-            document.getElementById("button1m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',720,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">1 mois</button>';
-            document.getElementById("button2m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',' + timeLengthGraph + ',2)" class="btn btn-outline-secondary btn-sm">2m</button>';
-            document.getElementById("button15m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',' + timeLengthGraph + ',15)" class="btn btn-outline-secondary btn-sm">15m</button>';
-            document.getElementById("button60m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',' + timeLengthGraph + ',60)" class="btn btn-outline-secondary btn-sm">1h</button>';
-            document.getElementById("button1440m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + sensor + '\',' + timeLengthGraph + ',1440)" class="btn btn-outline-secondary btn-sm">24h</button>';
+function chooseTimeNebuleAir(id, hours, timespan) {
+            timeLengthGraph = hours;
+            timespanGraph = timespan;
+            reloadDataSensor(id,hours,timespan);
+            document.getElementById("button1h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',1,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">1h</button>';
+            document.getElementById("button3h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',3,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">3h</button>';
+            document.getElementById("button24h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',24,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">24h</button>';
+            document.getElementById("button48h").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',48,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">48h</button>';
+            document.getElementById("button1s").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',168,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">1 semaine</button>';
+            document.getElementById("button1m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',720,' + timespanGraph + ')" class="btn btn-outline-secondary btn-sm">1 mois</button>';
+            document.getElementById("button2m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',' + timeLengthGraph + ',2)" class="btn btn-outline-secondary btn-sm">2m</button>';
+            document.getElementById("button15m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',' + timeLengthGraph + ',15)" class="btn btn-outline-secondary btn-sm">15m</button>';
+            document.getElementById("button60m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',' + timeLengthGraph + ',60)" class="btn btn-outline-secondary btn-sm">1h</button>';
+            document.getElementById("button1440m").innerHTML = '<button type="button" onclick="chooseTimeNebuleAir(\'' + id + '\',' + timeLengthGraph + ',1440)" class="btn btn-outline-secondary btn-sm">24h</button>';
             buttonsSwitcher(hours,timespan);
         }
 
 
-  function buttonsSwitcher(hours,timespan,type){
-    console.log(hours);
-    console.log(timespan);
+  function buttonsSwitcher(hours,timespan){
     switch (hours) {
             case 1:
                 document.getElementById("button1h").children[0].classList.replace("btn-outline-secondary", "btn-secondary");
@@ -915,7 +1561,7 @@ function chooseTimeNebuleAir(sensor, hours, timespan) {
                 break;
             }
 
-            switch (timespan) {
+    switch (timespan) {
             case 2:
                 document.getElementById("button2m").children[0].classList.replace("btn-outline-secondary", "btn-secondary");
                 document.getElementById("button15m").children[0].classList.replace("btn-secondary", "btn-outline-secondary");
@@ -949,6 +1595,66 @@ function reloadPage(){
 
 }
 
+function addr_search() {
+      var inp = document.getElementById("addr");
+      var xmlhttp = new XMLHttpRequest();
+      var url = "https://nominatim.openstreetmap.org/search?format=json&limit=3&q=" + inp.value;
+      xmlhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          var myArr = JSON.parse(this.responseText);
+          myFunction(myArr);
+        }
+      };
+      xmlhttp.open("GET", url, true);
+      xmlhttp.send();
+    }
+      
+    function myFunction(arr) {
+      var out = "";
+      var i;
+
+      if (arr.length > 0) {
+        for (i = 0; i < arr.length; i++) {
+          out += "<div class='address' title='Show Location and Coordinates' onclick='chooseAddr(" + arr[i].lat + ", " + arr[i].lon + ");return false;'>" + arr[i].display_name + "</div>";
+        }
+        document.getElementById('results').innerHTML = out;
+      } else {
+        document.getElementById('results').innerHTML = "Sorry, no results...";
+      }
+
+    }
+
+    function chooseAddr(lat1, lng1) {
+      myMarker.closePopup();
+      map.setView([lat1, lng1], 18);
+      myMarker.setLatLng([lat1, lng1]);
+      lat = lat1.toFixed(8);
+      lon = lng1.toFixed(8);
+      document.getElementById('lat').value = lat;
+      document.getElementById('lon').value = lon;
+      myMarker.bindPopup("Lat " + lat + "<br />Lon " + lon).openPopup();
+    }
+
+  function updateLocation(){
+
+    let lat = document.querySelector("#lat").value;
+    let lng = document.querySelector("#lon").value;
+
+    //https://aircarto.fr/API_V2/capteurs/changeLoc?capteurID=999&lat=0.0&long=0.0
+
+    console.log("https://aircarto.fr/API_V2/capteurs/changeLoc?capteurID=" + nebuleair +"&lat=" + lat + "&long=" + lng + "&token=" + token);
+
+    $.ajax({
+        method: "POST",
+        url: "https://aircarto.fr/API_V2/capteurs/changeLoc?capteurID=" + nebuleair +"&lat=" + lat + "&long=" + lng + "&token=" + token
+        // data:"capteurID=" + nebuleair +"&lat=" + lat + "&long=" + lng + "&token=" + token
+    }).fail(function() {
+        console.log("Error while posting data to Aircarto API");
+    });
+
+  }      
+        
+        
         </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
