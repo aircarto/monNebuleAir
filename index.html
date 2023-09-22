@@ -218,6 +218,21 @@ form{
                         
     </head>
     <body>
+
+
+      <div class="toast-container position-fixed end-0 p-3" style="bottom:10px;">
+        <div class="toast align-items-center" id="messageToast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Attention: <span id="message"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
         <section id="container_form">
             <div class="form login">
                 <div class="form-content">
@@ -247,17 +262,17 @@ form{
                 <div class="row" style="margin-top:20px;">
                   <div class="col-sm-8">
                     <a>
-                      <img src="/img/LogoNebuleAir.png" height="50" alt="">
+                      <img src="/monnebuleair/img/LogoNebuleAir.png" height="50" alt="">
                     </a>
                   </div>
           
                   <div class="col-sm-4" >
                     <a style="display: none;">
-                      <img src="/img/LogoAtmoSud.png" class="float-left" height="50" alt="">
+                      <img src="/monnebuleair/img/LogoAtmoSud.png" class="float-left" height="50" alt="">
                     </a>
           
                     <a>
-                      <img src="/img/logoAirCarto.png" class="float-right" height="50" alt="">
+                      <img src="/monnebuleair/img/logoAirCarto.png" class="float-right" height="50" alt="">
                     </a>
                   </div>
                 </div>
@@ -471,6 +486,19 @@ console.log("%cNebuleAir 1 sensor", "color: yellow; font-style: bold; background
           if (data != null){
 
 const timestamp_UTC = new Date(data[0].time);  // ATTENTION HEURE LOCALE POUR NEBULEAIR
+const timestamp_current = Date.now();
+
+let difference = ((timestamp_current-timestamp_UTC)/1000)/3600;
+
+console.log(difference);
+
+if(difference<=1){timeLengthGraph = 3}
+if(difference >1 && difference <= 3 ){timeLengthGraph = 3}
+if(difference > 3 && difference <= 24 ){timeLengthGraph = 24}
+if(difference > 24 && difference <= 48 ){timeLengthGraph = 48}
+if(difference > 48 && difference <= 168 ){timeLengthGraph = 168}
+if(difference > 168 && difference <= 720 ){timeLengthGraph = 720}
+if(difference > 720 && difference <= 8760 ){timeLengthGraph = 8760}
 
 document.querySelector("#lat").value = data[0].latitude;
 document.querySelector("#lon").value = data[0].longitude;
@@ -533,7 +561,7 @@ if(timestamp_UTC.getSeconds()< 10){
     }
 
     setTimeout( function() {am5.ready(function() {
-
+ 
     root1 = am5.Root.new("chartdiv1");
     gaugeCreator(root1,data[0],'PM1');
 
@@ -591,7 +619,7 @@ if(timestamp_UTC.getSeconds()< 10){
 
   const end = new Date();
   const end_string = end.toISOString();
-  const get_start = end.setHours(end.getHours() - 3);
+  const get_start = end.setHours(end.getHours() - timeLengthGraph);
   const start = new Date(get_start);
   const start_string = start.toISOString()
   console.log(start_string);
@@ -610,6 +638,7 @@ if(timestamp_UTC.getSeconds()< 10){
     }
 
     setTimeout( function() {am5.ready(function() {
+      if(data != null){
     root4 = am5.Root.new("chartdiv4");
     graphCreator(root4,data,'PM',timespanGraph,data[0].sensorId);
 
@@ -618,6 +647,9 @@ if(timestamp_UTC.getSeconds()< 10){
 
     root6 = am5.Root.new("chartdiv6");
     graphCreator(root6,data,'COV',timespanGraph,data[0].sensorId);
+  }else{
+openToast("Pas de donnée sur cet intervalle. Veuillez choisir une période plus longue.");
+}
     })}, 1000);
       
       
@@ -1665,21 +1697,31 @@ function addr_search() {
         console.log("Error while posting data to Aircarto API");
     });
 
-  }      
+  }     
+  
+  function openToast(message) {
+            let toastDiv= document.getElementById('messageToast');
+            document.getElementById('message').innerText = message;
+            let toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastDiv);
+            console.log("Showing message toast");
+            toastBootstrap.show()
+        }
         
         
         </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
-    <!-- <script>
+    <script>
         var tooltipTriggerList = [].slice.call(
             document.querySelectorAll('[data-bs-toggle="tooltip"]')
         );
         var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
-    </script> -->
+    </script>
     </body>
 </html>
