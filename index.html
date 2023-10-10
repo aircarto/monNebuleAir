@@ -262,17 +262,17 @@ form{
                 <div class="row" style="margin-top:20px;">
                   <div class="col-sm-8">
                     <a>
-                      <img src="/monnebuleair/img/LogoNebuleAir.png" height="50" alt="">
+                      <img src="./img/LogoNebuleAir.png" height="50" alt="">
                     </a>
                   </div>
           
                   <div class="col-sm-4" >
                     <a style="display: none;">
-                      <img src="/monnebuleair/img/LogoAtmoSud.png" class="float-left" height="50" alt="">
+                      <img src="./img/LogoAtmoSud.png" class="float-left" height="50" alt="">
                     </a>
           
                     <a>
-                      <img src="/monnebuleair/img/logoAirCarto.png" class="float-right" height="50" alt="">
+                      <img src="./img/LogoAirCarto.png" class="float-right" height="50" alt="">
                     </a>
                   </div>
                 </div>
@@ -282,9 +282,10 @@ form{
                       <div class="card">
                         <div class="card-body">
             
-                          <h3 class="card-title">Mes données</h3>
+                          <h3 class="card-title"><span id="idn"></span></h3>
+                          <h4>Mes données</h4>
             
-                            <p>Dernières mesures effectuées par le capteur <span id="idn"></span>: <span id="timestamp"></span></p>
+                            <p>Dernières mesures effectuées par le capteur : <span id="timestamp"></span></p>
                             <p>Niveau de connexion Wifi: <span id="wifilevel"></span></p>
                             <button type="button" onclick="refresh_data()" class="btn btn-outline-secondary btn-sm">Recharger les données</button>
 
