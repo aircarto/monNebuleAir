@@ -471,6 +471,8 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 21
 }).addTo(map); 
 
+var myMarker;
+
 function submit(){
 
     nebuleair = document.querySelector("#nebuleair").value;
@@ -578,7 +580,7 @@ if(timestamp_UTC.getSeconds()< 10){
 
     map.setView(coordsCenter, zoomLevel);  
 
-    var myMarker = L.marker([data[0].latitude, data[0].longitude], {
+    myMarker = new L.marker([data[0].latitude, data[0].longitude], {
       title: "Coordinates",
       alt: "Coordinates",
       draggable: true
