@@ -1692,9 +1692,12 @@ function addr_search() {
 
     $.ajax({
         method: "POST",
-        url: "https://aircarto.fr/API_V2/capteurs/changeLoc?capteurID=" + nebuleair +"&lat=" + lat + "&long=" + lng + "&token=" + token
-    }).fail(function() {
+        url: "https://aircarto.fr/API_V2/capteurs/changeLoc?capteurID=" + nebuleair +"&lat=" + lat + "&long=" + lng + "&token=" + token,
+        success: function(result){
+      openToast("Adresse modifiée.");
+    }}).fail(function() {
         console.log("Error while posting data to Aircarto API");
+        openToast("Erreur pour le changement de localisation.");
     });
 
   }     
