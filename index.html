@@ -364,6 +364,21 @@
           </div>
         </div>
 
+        <!-- SHOW ON MAP -->
+
+        <div class="row" style="margin-top: 20px">
+          <div class="col-sm-12">
+            <div class="card">
+              <div class="card-body">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" role="switch" id="show">
+                  <label class="form-check-label" for="show">Affichage sur la carte OpenAirMap</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- HISTORIQUE -->
         <div class="row" style="margin-top: 20px">
           <div class="col-sm-12">
@@ -526,6 +541,8 @@
         .querySelector("#updateLoc")
         .addEventListener("click", updateLocation);
 
+        document.querySelector("#show").addEventListener("change", displayOnMap);
+
       pwShowHide.forEach((eyeIcon) => {
         eyeIcon.addEventListener("click", () => {
           let pwFields =
@@ -577,6 +594,13 @@
           .done(function (data) {
             console.log(data);
             if (data != null) {
+
+              if (data[0].displaymap){
+                document.querySelector("#show").checked = true;
+              }else{
+                document.querySelector("#show").checked = false;
+              }
+
               const timestamp_UTC = new Date(data[0].time); // ATTENTION HEURE LOCALE POUR NEBULEAIR
               const timestamp_current = Date.now();
 
@@ -2289,6 +2313,43 @@
 
       function reloadPage() {
         location.reload();
+      }
+
+      function displayOnMap() {
+
+        let show;
+
+        if (document.querySelector("#show").checked == true){
+          show = true;
+        }else{
+          show = false;
+        }
+
+        $.ajax({
+          method: "POST",
+          url:
+            "https://aircarto.fr/API_V2/capteurs/changeLoc?capteurID=" +
+            nebuleair +
+            "&displaymap=" +
+            show +
+            "&token=" +
+            token,
+          success: function (result) {
+            if (show){
+              openToast("Le NebuleAir sera affiché sur la carte.");
+            }else{
+              openToast("Le NebuleAir ne sera pas affiché sur la carte.");
+            }
+          },
+        }).fail(function () {
+          console.log("Error while posting data to Aircarto API");
+          openToast("Erreur pour le changement d'état d'affichage.");
+        });
+
+
+
+
+
       }
 
       function addr_search() {
