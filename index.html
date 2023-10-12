@@ -541,7 +541,7 @@
         .querySelector("#updateLoc")
         .addEventListener("click", updateLocation);
 
-        document.querySelector("#show").addEventListener("change", displayOnMap);
+      document.querySelector("#show").addEventListener("change", displayOnMap);
 
       pwShowHide.forEach((eyeIcon) => {
         eyeIcon.addEventListener("click", () => {
@@ -595,7 +595,7 @@
             console.log(data);
             if (data != null) {
 
-              if (data[0].displaymap){
+              if (data[0].displayMap){
                 document.querySelector("#show").checked = true;
               }else{
                 document.querySelector("#show").checked = false;
@@ -2320,22 +2320,22 @@
         let show;
 
         if (document.querySelector("#show").checked == true){
-          show = true;
+          show = "OUI";
         }else{
-          show = false;
+          show = "NON";
         }
 
         $.ajax({
           method: "POST",
           url:
-            "https://aircarto.fr/API_V2/capteurs/changeLoc?capteurID=" +
+            "https://aircarto.fr/API_V2/capteurs/displayMap?capteurID=" +
             nebuleair +
-            "&displaymap=" +
+            "&displayMap=" +
             show +
             "&token=" +
             token,
           success: function (result) {
-            if (show){
+            if (show == "OUI"){
               openToast("Le NebuleAir sera affiché sur la carte.");
             }else{
               openToast("Le NebuleAir ne sera pas affiché sur la carte.");
