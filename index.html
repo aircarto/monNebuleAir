@@ -68,7 +68,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #4070f4;
+        background-color: white;
         column-gap: 30px;
       }
 
@@ -192,20 +192,20 @@
       }
 
       #chartdiv1 {
-        width: 400px;
-        height: 400px;
+        width: 350px;
+        height: 350px;
         display: inline-flex;
       }
 
       #chartdiv2 {
-        width: 400px;
-        height: 400px;
+        width: 350px;
+        height: 350px;
         display: inline-flex;
       }
 
       #chartdiv3 {
-        width: 400px;
-        height: 400px;
+        width: 350px;
+        height: 350px;
         display: inline-flex;
       }
 
@@ -242,6 +242,8 @@
         </div>
       </div>
     </div>
+
+    <div class="container">
 
     <section id="container_form">
       <div class="form login">
@@ -316,10 +318,11 @@
           <div class="col-sm-12">
             <div class="card">
               <div class="card-body">
-                <h3 class="card-title">Mes données</h3>
+                <h3 class="card-title"><span id="idn"></span></h3>
+                <h4>Mes données</h4>
 
                 <p>
-                  Dernières mesures du capteur <span id="idn"></span> : 
+                  Dernières mesures du capteur : 
                 <span id="timestamp"></span>
                 </p>
                 <p>Niveau de connexion Wifi: <span id="wifilevel"></span></p>
@@ -522,6 +525,7 @@
         </div>
       </div>
     </section>
+  </div>
 
     <!-- JavaScript -->
     <script>
