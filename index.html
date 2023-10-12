@@ -244,288 +244,335 @@
     </div>
 
     <div class="container">
+      <section id="container_form">
+        <div class="form login">
+          <div class="form-content">
+            <header><h2 class="fw-bold mb-2">Mon NebuleAir</h2></header>
+            <p style="text-align: center">
+              Veuillez entrer le nom du NebuleAir ainsi que son token (indiqué
+              au dos de l'appareil)
+            </p>
+            <div class="field input-field">
+              <input
+                type="text"
+                placeholder="Nom (device ID)"
+                class="input"
+                id="nebuleair"
+              />
+            </div>
 
-    <section id="container_form">
-      <div class="form login">
-        <div class="form-content">
-          <header><h2 class="fw-bold mb-2">Mon NebuleAir</h2></header>
-          <p style="text-align: center">
-            Veuillez entrer le nom du NebuleAir ainsi que son token (indiqué au
-            dos de l'appareil)
-          </p>
-          <div class="field input-field">
-            <input
-              type="text"
-              placeholder="Nom (device ID)"
-              class="input"
-              id="nebuleair"
-            />
-          </div>
+            <div class="field input-field">
+              <input
+                type="password"
+                placeholder="Token"
+                class="password"
+                id="token"
+              />
+              <i class="bx bx-hide eye-icon"></i>
+            </div>
 
-          <div class="field input-field">
-            <input
-              type="password"
-              placeholder="Token"
-              class="password"
-              id="token"
-            />
-            <i class="bx bx-hide eye-icon"></i>
-          </div>
-
-          <div class="field button-field">
-            <button id="submit">Se connecter</button>
+            <div class="field button-field">
+              <button id="submit">Se connecter</button>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section id="container_graphs">
-      <div class="container-fluid">
-        <!-- LOGOS TOP -->
-        <div class="row" style="margin-top: 20px">
-          <div class="col-sm-8">
-            <a>
-              <img
-                src="./img/LogoNebuleAir.png"
-                height="50"
-                alt=""
-              />
-            </a>
+      <section id="container_graphs">
+        <div class="container-fluid">
+          <!-- LOGOS TOP -->
+          <div class="row" style="margin-top: 20px">
+            <div class="col-sm-8">
+              <a>
+                <img src="./img/LogoNebuleAir.png" height="50" alt="" />
+              </a>
+            </div>
+
+            <div class="col-sm-4">
+              <a style="display: none">
+                <img
+                  src="./img/LogoAtmoSud.png"
+                  class="float-left"
+                  height="50"
+                  alt=""
+                />
+              </a>
+
+              <a>
+                <img
+                  src="./img/LogoAirCarto.png"
+                  class="float-right"
+                  height="50"
+                  alt=""
+                />
+              </a>
+            </div>
           </div>
 
-          <div class="col-sm-4">
-            <a style="display: none">
-              <img
-                src="./img/LogoAtmoSud.png"
-                class="float-left"
-                height="50"
-                alt=""
-              />
-            </a>
+          <div class="row" style="margin-top: 20px">
+            <div class="col-sm-12">
+              <div class="card">
+                <div class="card-body">
+                  <h3 class="card-title"><span id="idn"></span></h3>
+                  <h4>Mes données</h4>
 
-            <a>
-              <img
-                src="./img/LogoAirCarto.png"
-                class="float-right"
-                height="50"
-                alt=""
-              />
-            </a>
+                  <p>
+                    Dernières mesures du capteur :
+                    <span id="timestamp"></span>
+                  </p>
+                  <p>Niveau de connexion Wifi: <span id="wifilevel"></span></p>
+                  <button
+                    type="button"
+                    onclick="refresh_data()"
+                    class="btn btn-outline-secondary btn-sm"
+                  >
+                    Recharger les données
+                  </button>
+
+                  <div class="row">
+                    <div class="col-sm">
+                      <!-- PM1 -->
+                      <div
+                        class="embed-responsive embed-responsive-4by3"
+                        id="chartdiv1"
+                      ></div>
+                    </div>
+
+                    <div class="col-sm">
+                      <!-- PM2.5 -->
+                      <div
+                        class="embed-responsive embed-responsive-4by3"
+                        id="chartdiv2"
+                      ></div>
+                    </div>
+
+                    <div class="col-sm">
+                      <div
+                        class="embed-responsive embed-responsive-4by3"
+                        id="chartdiv3"
+                      >
+                        <!-- PM10 -->
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- <br></br> -->
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div class="row" style="margin-top: 20px">
-          <div class="col-sm-12">
-            <div class="card">
-              <div class="card-body">
-                <h3 class="card-title"><span id="idn"></span></h3>
-                <h4>Mes données</h4>
+          <!-- SHOW ON MAP -->
 
-                <p>
-                  Dernières mesures du capteur : 
-                <span id="timestamp"></span>
-                </p>
-                <p>Niveau de connexion Wifi: <span id="wifilevel"></span></p>
-                <button
-                  type="button"
-                  onclick="refresh_data()"
-                  class="btn btn-outline-secondary btn-sm"
-                >
-                  Recharger les données
-                </button>
-
-                <div class="row">
-                  <div class="col-sm">
-                    <!-- PM1 -->
-                    <div
-                      class="embed-responsive embed-responsive-4by3"
-                      id="chartdiv1"
-                    ></div>
-                  </div>
-
-                  <div class="col-sm">
-                    <!-- PM2.5 -->
-                    <div
-                      class="embed-responsive embed-responsive-4by3"
-                      id="chartdiv2"
-                    ></div>
-                  </div>
-
-                  <div class="col-sm">
-                    <div
-                      class="embed-responsive embed-responsive-4by3"
-                      id="chartdiv3"
+          <div class="row" style="margin-top: 20px">
+            <div class="col-sm-12">
+              <div class="card">
+                <div class="card-body">
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="show"
+                    />
+                    <label class="form-check-label" for="show"
+                      >Affichage sur la carte OpenAirMap</label
                     >
-                      <!-- PM10 -->
-                    </div>
-                  </div>
-                </div>
-
-                <!-- <br></br> -->
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- SHOW ON MAP -->
-
-        <div class="row" style="margin-top: 20px">
-          <div class="col-sm-12">
-            <div class="card">
-              <div class="card-body">
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" role="switch" id="show">
-                  <label class="form-check-label" for="show">Affichage sur la carte OpenAirMap</label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- HISTORIQUE -->
-        <div class="row" style="margin-top: 20px">
-          <div class="col-sm-12">
-            <div class="card">
-              <div class="card-body">
-                <div id="historique">Historique</div>
-                <span id="button1h"></span>
-                <span id="button3h"></span>
-                <span id="button24h"></span>
-                <span id="button48h"></span>
-                <span id="button1s"></span>
-                <span id="button1m"></span>
-                <span id="button1a"></span>
-                <div id="pdt">Pas de temps</div>
-                <span id="button2m"></span>
-                <span id="button15m"></span>
-                <span id="button60m"></span>
-                <span id="button1440m"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- GRAPH -->
-
-        <div class="row" style="margin-top: 20px">
-          <div class="col-sm-12">
-            <div class="card">
-              <div class="card-body">
-                <div id="chartdiv4"></div>
-                <br />
-                <div id="chartdiv5"></div>
-                <br />
-                <div id="chartdiv6"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- MAP CONTROL-->
-
-        <div class="row" style="margin-top: 20px">
-          <div class="col-sm-12">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Géolocaliser mon capteur</h5>
-
-                <div id="search">
-                  <div class="mb-3 row">
-                    <div class="col-8">
-                      <input
-                        type="text"
-                        name="addr"
-                        value=""
-                        id="addr"
-                        class="form-control"
-                        placeholder="Entrez ici l'adresse ou se situe le NebuleAir ou déplacez le curseur sur la carte"
-                      />
-                    </div>
-                    <div class="col-4">
-                      <button
-                        type="button"
-                        class="btn btn-outline-secondary btn-sm"
-                        onclick="addr_search();"
-                      >
-                        Rechercher
-                      </button>
-                    </div>
-                  </div>
-
-                  <div id="results">
-                    <!-- Affichage des résultats de la recherche -->
-                  </div>
-
-                  <!-- Coordonnées -->
-                  <div class="mb-3 row">
-                    <div class="col-4">
-                      <input
-                        type="text"
-                        name="new_lat"
-                        id="lat"
-                        size="12"
-                        value=""
-                        class="form-control"
-                      />
-                    </div>
-                    <div class="col-4">
-                      <input
-                        type="text"
-                        name="new_lon"
-                        id="lon"
-                        size="12"
-                        value=""
-                        class="form-control"
-                      />
-                    </div>
-                    <div class="col-4">
-                      <button
-                        type="button"
-                        id="updateLoc"
-                        class="btn btn-success"
-                      >
-                        Valider
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- MAP -->
+          <!-- HISTORIQUE -->
+          <div class="row" style="margin-top: 20px">
+            <div class="col-sm-12">
+              <div class="card">
+                <div class="card-body">
+                  <div id="historique">Historique</div>
+                  <span id="button1h"></span>
+                  <span id="button3h"></span>
+                  <span id="button24h"></span>
+                  <span id="button48h"></span>
+                  <span id="button1s"></span>
+                  <span id="button1m"></span>
+                  <span id="button1a"></span>
+                  <div id="pdt">Pas de temps</div>
+                  <span id="button2m"></span>
+                  <span id="button15m"></span>
+                  <span id="button60m"></span>
+                  <span id="button1440m"></span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        <div class="row" style="margin-top: 20px">
-          <div class="col-sm-12">
-            <div class="card">
-              <div class="card-body">
-                <div id="map"></div>
+          <!-- GRAPH -->
+
+          <div class="row" style="margin-top: 20px">
+            <div class="col-sm-12">
+              <div class="card">
+                <div class="card-body">
+                  <div id="chartdiv4"></div>
+                  <br />
+                  <div id="chartdiv5"></div>
+                  <br />
+                  <div id="chartdiv6"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- EMPLACEMENT-->
+
+          <div class="row" style="margin-top: 20px">
+            <div class="col-sm-12">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Position</h5>
+                  <span>Indiquez où le NebuleAir est positionné </span>
+                  <br />
+                  <select
+                    id="room"
+                    class="form-select form-select-sm"
+                    aria-label="Small select example"
+                  >
+                    <option value="null">Choix de la position</option>
+                    <option value="balcon">Balcon</option>
+                    <option value="terrasse">Terrasse</option>
+                    <option value="jardin">Jardin</option>
+                  </select>
+                  <br />
+                  <select
+                    id="height"
+                    class="form-select form-select-sm"
+                    aria-label="Small select example"
+                  >
+                    <option value="null">Choix de la hauteur</option>
+                    <option value="0">Rez-de-chausée</option>
+                    <option value="1">1er étage</option>
+                    <option value="2">2e étage</option>
+                    <option value="3">3e étage</option>
+                    <option value="4">4e étage</option>
+                    <option value="5">5e étage</option>
+                    <option value="6">6e étage</option>
+                    <option value="7">7e étage</option>
+                    <option value="8">8e étage</option>
+                    <option value="9">9e étage</option>
+                    <option value="10">10e étage</option>
+                    <option value="11">11e étage</option>
+                    <option value="12">12e étage</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MAP CONTROL-->
+
+          <div class="row" style="margin-top: 20px">
+            <div class="col-sm-12">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Géolocaliser mon capteur</h5>
+
+                  <div id="search">
+                    <div class="mb-3 row">
+                      <div class="col-8">
+                        <input
+                          type="text"
+                          name="addr"
+                          value=""
+                          id="addr"
+                          class="form-control"
+                          placeholder="Entrez ici l'adresse ou se situe le NebuleAir ou déplacez le curseur sur la carte"
+                        />
+                      </div>
+                      <div class="col-4">
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary btn-sm"
+                          onclick="addr_search();"
+                        >
+                          Rechercher
+                        </button>
+                      </div>
+                    </div>
+
+                    <div id="results">
+                      <!-- Affichage des résultats de la recherche -->
+                    </div>
+
+                    <!-- Coordonnées -->
+                    <div class="mb-3 row">
+                      <div class="col-4">
+                        <input
+                          type="text"
+                          name="new_lat"
+                          id="lat"
+                          size="12"
+                          value=""
+                          class="form-control"
+                        />
+                      </div>
+                      <div class="col-4">
+                        <input
+                          type="text"
+                          name="new_lon"
+                          id="lon"
+                          size="12"
+                          value=""
+                          class="form-control"
+                        />
+                      </div>
+                      <div class="col-4">
+                        <button
+                          type="button"
+                          id="updateLoc"
+                          class="btn btn-success"
+                        >
+                          Valider
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MAP -->
+
+          <div class="row" style="margin-top: 20px">
+            <div class="col-sm-12">
+              <div class="card">
+                <div class="card-body">
+                  <div id="map"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LOGOUT BUTTON -->
+
+          <div class="row" style="margin-top: 20px">
+            <div class="col-sm-12">
+              <div class="card">
+                <div class="card-body">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    id="logout"
+                  >
+                    Déconnexion
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- LOGOUT BUTTON -->
-
-        <div class="row" style="margin-top: 20px">
-          <div class="col-sm-12">
-            <div class="card">
-              <div class="card-body">
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary btn-sm"
-                  id="logout"
-                >
-                  Déconnexion
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
+      </section>
+    </div>
 
     <!-- JavaScript -->
     <script>
@@ -546,6 +593,10 @@
         .addEventListener("click", updateLocation);
 
       document.querySelector("#show").addEventListener("change", displayOnMap);
+      document.querySelector("#room").addEventListener("change", changeRoom);
+      document
+        .querySelector("#height")
+        .addEventListener("change", changeHeight);
 
       pwShowHide.forEach((eyeIcon) => {
         eyeIcon.addEventListener("click", () => {
@@ -599,9 +650,12 @@
             console.log(data);
             if (data != null) {
 
-              if (data[0].displayMap){
+              document.querySelector("#room").value = data[0].room;
+              document.querySelector("#height").value = data[0].etage;
+
+              if (data[0].displayMap) {
                 document.querySelector("#show").checked = true;
-              }else{
+              } else {
                 document.querySelector("#show").checked = false;
               }
 
@@ -642,7 +696,9 @@
               //const  timestamp_local = new Date(timestamp_UTC.setHours(timestamp_UTC.getHours() + offset));
 
               document.querySelector("#idn").innerText = data[0].sensorId;
-              document.querySelector("#timestamp").innerText = timeDateCounter(data[0].time);
+              document.querySelector("#timestamp").innerText = timeDateCounter(
+                data[0].time
+              );
 
               console.log(data[0].wifi_signal);
 
@@ -650,7 +706,8 @@
               document.querySelector("#wifilevel").innerText = wifiLevel + " %";
 
               document.querySelector("#container_form").style.display = "none";
-              document.querySelector("#container_graphs").style.display = "block";
+              document.querySelector("#container_graphs").style.display =
+                "block";
 
               if (
                 root1 != undefined &&
@@ -678,7 +735,8 @@
               let coordsCenter = [data[0].latitude, data[0].longitude]; // Marseille
               let zoomLevel = 16;
 
-              map.setView(coordsCenter, zoomLevel);
+               map.setView(coordsCenter, zoomLevel);
+
 
               myMarker = new L.marker([data[0].latitude, data[0].longitude], {
                 title: "Coordinates",
@@ -2320,12 +2378,11 @@
       }
 
       function displayOnMap() {
-
         let show;
 
-        if (document.querySelector("#show").checked == true){
+        if (document.querySelector("#show").checked == true) {
           show = "OUI";
-        }else{
+        } else {
           show = "NON";
         }
 
@@ -2339,9 +2396,9 @@
             "&token=" +
             token,
           success: function (result) {
-            if (show == "OUI"){
+            if (show == "OUI") {
               openToast("Le NebuleAir sera affiché sur la carte.");
-            }else{
+            } else {
               openToast("Le NebuleAir ne sera pas affiché sur la carte.");
             }
           },
@@ -2349,11 +2406,6 @@
           console.log("Error while posting data to Aircarto API");
           openToast("Erreur pour le changement d'état d'affichage.");
         });
-
-
-
-
-
       }
 
       function addr_search() {
@@ -2436,6 +2488,52 @@
         }).fail(function () {
           console.log("Error while posting data to Aircarto API");
           openToast("Erreur pour le changement de localisation.");
+        });
+      }
+
+      function changeRoom(event) {
+        let room;
+
+        console.log(event.target.value);
+
+        $.ajax({
+          method: "POST",
+          url:
+            "https://aircarto.fr/API_V2/capteurs/changeRoom?capteurID=" +
+            nebuleair +
+            "&room=" +
+            event.target.value +
+            "&token=" +
+            token,
+          success: function (result) {
+            openToast("Position changée.");
+          },
+        }).fail(function () {
+          console.log("Error while posting data to Aircarto API");
+          openToast("Erreur pour le changement de la position.");
+        });
+      }
+
+      function changeHeight(event) {
+        let room;
+
+        console.log(event.target.value);
+
+        $.ajax({
+          method: "POST",
+          url:
+            "https://aircarto.fr/API_V2/capteurs/changeHeight?capteurID=" +
+            nebuleair +
+            "&height=" +
+            event.target.value +
+            "&token=" +
+            token,
+          success: function (result) {
+            openToast("Hauteur changée.");
+          },
+        }).fail(function () {
+          console.log("Error while posting data to Aircarto API");
+          openToast("Erreur pour le changement de la hauteur.");
         });
       }
 
