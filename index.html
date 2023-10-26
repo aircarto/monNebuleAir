@@ -376,7 +376,7 @@
                       id="show"
                     />
                     <label class="form-check-label" for="show"
-                      >Affichage sur la carte OpenAirMap</label
+                      >Afficher le capteur sur la carte OpenAirMap</label
                     >
                   </div>
                 </div>
@@ -566,7 +566,7 @@
                     </span>
                   <br />
                   <input type="checkbox" id="sc" name="sc">
-                  <label for="sc"> J'accepte d'envoyer mes données de mesures et de localisation</label>
+                  <label for="sc">J'accepte d'envoyer les données de mesures et de localisation du capteur</label>
                 </div>
               </div>
             </div>
@@ -2573,7 +2573,7 @@
         $.ajax({
           method: "POST",
           url:
-            "https://aircarto.fr/API_V2/capteurs/displayMap?capteurID=" +
+            "https://aircarto.fr/API_V2/capteurs/sensorCommunity?capteurID=" +
             nebuleair +
             "&SensorCommunity=" +
             sc +
