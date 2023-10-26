@@ -553,6 +553,24 @@
             </div>
           </div>
 
+
+          <!-- SENSOR.COMMUNITY-->
+
+          <div class="row" style="margin-top: 20px">
+            <div class="col-sm-12">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Sensor.Community</h5>
+                  <span>Envoyer les données vers la plateforme open data 
+                    <a href="https://sensor.community/fr/" target="_blank">Sensor.Community</a>
+                    </span>
+                  <br />
+                  <input type="checkbox" id="sc" name="sc">
+                  <label for="sc"> J'accepte d'envoyer mes données de mesures et de localisation</label>
+                </div>
+              </div>
+            </div>
+          </div>
           <!-- LOGOUT BUTTON -->
 
           <div class="row" style="margin-top: 20px">
@@ -597,6 +615,11 @@
       document
         .querySelector("#height")
         .addEventListener("change", changeHeight);
+
+      document
+        .querySelector("#sc")
+        .addEventListener("change", forwardSC);
+
 
       pwShowHide.forEach((eyeIcon) => {
         eyeIcon.addEventListener("click", () => {
@@ -2535,6 +2558,39 @@
           console.log("Error while posting data to Aircarto API");
           openToast("Erreur pour le changement de la hauteur.");
         });
+      }
+
+      function forwardSC(event) {
+
+        let sc;
+
+        if (document.querySelector("#sc").checked == true) {
+          sc = "OUI";
+        } else {
+          sc = "NON";
+        }
+
+        $.ajax({
+          method: "POST",
+          url:
+            "https://aircarto.fr/API_V2/capteurs/displayMap?capteurID=" +
+            nebuleair +
+            "&SensorCommunity=" +
+            sc +
+            "&token=" +
+            token,
+          success: function (result) {
+            if (show == "OUI") {
+              openToast("Les données seront transmises à Sensor.Community.");
+            } else {
+              openToast("Les données ne serontpas transmises à Sensor.Community.");
+            }
+          },
+        }).fail(function () {
+          console.log("Error while posting data to Aircarto API");
+          openToast("Erreur pour le transfert vers Sensor.Community.");
+        });
+
       }
 
       function openToast(message) {
