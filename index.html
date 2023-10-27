@@ -565,8 +565,15 @@
                     <a href="https://sensor.community/fr/" target="_blank">Sensor.Community</a>
                     </span>
                   <br />
-                  <input type="checkbox" id="sc" name="sc">
-                  <label for="sc">J'accepte d'envoyer les données de mesures et de localisation du capteur</label>
+                  <div class="form-check form-switch">
+                  <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="sc"
+                />
+                  <label class="form-check-label" for="sc">J'accepte d'envoyer les données de mesures et de localisation du capteur</label>
+                </div>
                 </div>
               </div>
             </div>
@@ -676,10 +683,18 @@
               document.querySelector("#room").value = data[0].room;
               document.querySelector("#height").value = data[0].etage;
 
+              console.log(data[0].displayMap);
+              console.log(data[0].SensorCommunity);
               if (data[0].displayMap) {
                 document.querySelector("#show").checked = true;
               } else {
                 document.querySelector("#show").checked = false;
+              }
+
+              if (data[0].SensorCommunity) {
+                document.querySelector("#sc").checked = true;
+              } else {
+                document.querySelector("#sc").checked = false;
               }
 
               const timestamp_UTC = new Date(data[0].time); // ATTENTION HEURE LOCALE POUR NEBULEAIR
@@ -2585,7 +2600,7 @@
             if (sc == "OUI") {
               openToast("Les données seront transmises à Sensor.Community.");
             } else {
-              openToast("Les données ne serontpas transmises à Sensor.Community.");
+              openToast("Les données ne seront pas transmises à Sensor.Community.");
             }
           },
         }).fail(function () {
