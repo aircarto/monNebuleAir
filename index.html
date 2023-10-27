@@ -2570,6 +2570,8 @@
           sc = "NON";
         }
 
+        console.log("https://aircarto.fr/API_V2/capteurs/sensorCommunity?capteurID=" + nebuleair + "&SensorCommunity=" + sc + "&token=" + token);
+
         $.ajax({
           method: "POST",
           url:
@@ -2580,7 +2582,7 @@
             "&token=" +
             token,
           success: function (result) {
-            if (show == "OUI") {
+            if (sc == "OUI") {
               openToast("Les données seront transmises à Sensor.Community.");
             } else {
               openToast("Les données ne serontpas transmises à Sensor.Community.");
