@@ -441,6 +441,7 @@
                     <option value="balcon">Balcon</option>
                     <option value="terrasse">Terrasse</option>
                     <option value="jardin">Jardin</option>
+                    <option value="fenetre">Fenêtre</option>
                   </select>
                   <br />
                   <select
@@ -1158,6 +1159,8 @@
             textAlign: "right",
           });
 
+          legend.valueLabels.template.set("forceHidden", true);
+
           // It's is important to set legend data after all the events are set on template, otherwise events won't be copied
           legend.data.setAll(chart.series.values);
 
@@ -1346,6 +1349,8 @@
             textAlign: "right",
           });
 
+          legend.valueLabels.template.set("forceHidden", true);
+
           // It's is important to set legend data after all the events are set on template, otherwise events won't be copied
           legend.data.setAll(chart.series.values);
 
@@ -1486,6 +1491,8 @@
             width: am5.p100,
             textAlign: "right",
           });
+
+          legend.valueLabels.template.set("forceHidden", true);
 
           // It's is important to set legend data after all the events are set on template, otherwise events won't be copied
           legend.data.setAll(chart.series.values);
