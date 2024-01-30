@@ -524,6 +524,7 @@
                           size="12"
                           value=""
                           class="form-control"
+                          
                         />
                       </div>
                       <div class="col-4">
@@ -534,6 +535,8 @@
                           size="12"
                           value=""
                           class="form-control"
+                        
+
                         />
                       </div>
                       <div class="col-4">
@@ -672,6 +675,7 @@
 
       var myMarker;
 
+      //Une fois que l'on est connecté et que la page s'ouvre
       function submit() {
         nebuleair = document.querySelector("#nebuleair").value;
         token = document.querySelector("#token").value;
@@ -784,7 +788,7 @@
               let coordsCenter = [data[0].latitude, data[0].longitude]; // Marseille
               let zoomLevel = 16;
 
-               map.setView(coordsCenter, zoomLevel);
+              map.setView(coordsCenter, zoomLevel);
 
 
               myMarker = new L.marker([data[0].latitude, data[0].longitude], {
@@ -798,13 +802,13 @@
                   var lon = myMarker.getLatLng().lng.toFixed(8);
                   var czoom = map.getZoom();
                   if (czoom < 18) {
-                    nzoom = czoom + 2;
+                    czoom = czoom + 2;
                   }
-                  if (nzoom > 18) {
-                    nzoom = 18;
+                  if (czoom > 18) {
+                    czoom = 18;
                   }
                   if (czoom != 18) {
-                    map.setView([lat, lon], nzoom);
+                    map.setView([lat, lon], czoom);
                   } else {
                     map.setView([lat, lon]);
                   }
@@ -2539,6 +2543,7 @@
             token,
           success: function (result) {
             openToast("Adresse modifiée.");
+            chooseAddr(lat, lng)
           },
         }).fail(function () {
           console.log("Error while posting data to Aircarto API");
