@@ -52,181 +52,12 @@
     <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
     <script src="https://cdn.amcharts.com/lib/5/plugins/exporting.js"></script>
 
-    <style>
-      /* Google Fonts - Poppins */
-      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Poppins", sans-serif;
-      }
-      #container_form {
-        height: 100vh;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: white;
-        column-gap: 30px;
-      }
 
-      #container_graphs {
-        height: 100vh;
-        width: 100%;
-        /* display: flex; */
-        align-items: center;
-        justify-content: center;
-        background-color: white;
-        column-gap: 30px;
-        display: none;
-      }
+    <link rel="stylesheet" href="style.css">
 
-      .form {
-        position: absolute;
-        max-width: 430px;
-        width: 100%;
-        padding: 30px;
-        border-radius: 6px;
-        background: #fff;
-      }
-      .form.signup {
-        opacity: 0;
-        pointer-events: none;
-      }
-      .forms.show-signup .form.signup {
-        opacity: 1;
-        pointer-events: auto;
-      }
-      .forms.show-signup .form.login {
-        opacity: 0;
-        pointer-events: none;
-      }
-      header {
-        font-size: 28px;
-        font-weight: 600;
-        color: #232836;
-        text-align: center;
-      }
-      form {
-        margin-top: 30px;
-      }
-      .form .field {
-        position: relative;
-        height: 50px;
-        width: 100%;
-        margin-top: 20px;
-        border-radius: 6px;
-      }
-      .field input,
-      .field button {
-        height: 100%;
-        width: 100%;
-        border: none;
-        font-size: 16px;
-        font-weight: 400;
-        border-radius: 6px;
-      }
-      .field input {
-        outline: none;
-        padding: 0 15px;
-        border: 1px solid#CACACA;
-      }
-      .field input:focus {
-        border-bottom-width: 2px;
-      }
-      .eye-icon {
-        position: absolute;
-        top: 50%;
-        right: 10px;
-        transform: translateY(-50%);
-        font-size: 18px;
-        color: #8b8b8b;
-        cursor: pointer;
-        padding: 5px;
-      }
-      .field button {
-        color: #fff;
-        background-color: #0171d3;
-        transition: all 0.3s ease;
-        cursor: pointer;
-      }
-      .field button:hover {
-        background-color: #016dcb;
-      }
-
-      .form a {
-        color: #0171d3;
-        text-decoration: none;
-      }
-      .form-content a:hover {
-        text-decoration: underline;
-      }
-
-      @media screen and (max-width: 400px) {
-        .form {
-          padding: 20px 10px;
-        }
-      }
-
-      #map {
-        /* width: 100vW; */
-        height: 500px;
-        padding: 0;
-        margin: 0;
-        /* margin-top: 20px; */
-      }
-
-      .address {
-        cursor: pointer;
-        border: 3px solid #1c6ea4;
-        border-radius: 9px;
-        padding: 5px;
-        margin: 4px;
-        margin-bottom: 8px;
-      }
-
-      .address:hover {
-        background-color: #92a4a2;
-      }
-
-      #chartdiv1 {
-        width: 350px;
-        height: 350px;
-        display: inline-flex;
-      }
-
-      #chartdiv2 {
-        width: 350px;
-        height: 350px;
-        display: inline-flex;
-      }
-
-      #chartdiv3 {
-        width: 350px;
-        height: 350px;
-        display: inline-flex;
-      }
-
-      #chartdiv4 {
-        width: 100%;
-        height: 500px;
-        max-width: 100%;
-      }
-
-      #chartdiv5 {
-        width: 100%;
-        height: 500px;
-        max-width: 100%;
-      }
-
-      #chartdiv6 {
-        width: 100%;
-        height: 500px;
-        max-width: 100%;
-      }
-    </style>
   </head>
   <body>
     <div class="toast-container position-fixed end-0 p-3" style="bottom: 10px">
@@ -681,7 +512,7 @@
         token = document.querySelector("#token").value;
 
         console.log(
-          "%cNebuleAir 1 sensor",
+          "%cSUBMIT",
           "color: yellow; font-style: bold; background-color: blue;padding: 2px"
         );
 
@@ -689,17 +520,26 @@
           method: "GET",
           url:
             "https://aircarto.fr/API_V2/capteurs/metadata?capteurType=NebuleAir&capteurID=" +
-            nebuleair,
+            nebuleair +
+            "&token=" +
+            token,
         })
           .done(function (data) {
+            console.log("Sensor metadata:")
             console.log(data);
-            if (data != null) {
+            console.log("CheckToken: " + data[0].check_token);
+
+
+            //si on recoit de la data de l'API ou si le token est bon
+            if (data != null && data[0].check_token === true ) {
 
               document.querySelector("#room").value = data[0].room;
               document.querySelector("#height").value = data[0].etage;
+              
+              console.log("Display map: "+ data[0].displayMap);
+              console.log("Send sensor.community: " + data[0].SensorCommunity);
 
-              console.log(data[0].displayMap);
-              console.log(data[0].SensorCommunity);
+
               if (data[0].displayMap) {
                 document.querySelector("#show").checked = true;
               } else {
@@ -718,7 +558,7 @@
               let difference =
                 (timestamp_current - timestamp_UTC) / 1000 / 3600;
 
-              console.log(difference);
+              //console.log(difference);
 
               if (difference <= 1) {
                 timeLengthGraph = 3;
@@ -753,7 +593,7 @@
                 data[0].time
               );
 
-              console.log(data[0].wifi_signal);
+              //console.log(data[0].wifi_signal);
 
               let wifiLevel = 2 * (parseInt(data[0].wifi_signal) + 100);
               document.querySelector("#wifilevel").innerText = wifiLevel + " %";
@@ -908,7 +748,7 @@
                   "&freq=2m",
               })
                 .done(function (data) {
-                  console.log(data);
+                  //console.log(data);
 
                   if (
                     root4 != undefined &&
@@ -961,7 +801,16 @@
                   console.log("Error while geting data from Aircarto API");
                 });
             } else {
-              // alert
+              // WRONG ID OR TOKEN
+              console.log("Error with device ID or token");
+              
+              Swal.fire({
+                                title: "Erreur",
+                                html: `Le numéro du capteur ou son token ne sont pas les bons, veuillez recommencer.`,
+                                icon: "error"
+                                })
+
+              //Leave empty the HTML elements
               document.querySelector("#nebuleair").value = "";
               document.querySelector("#token").value = "";
             }
@@ -1533,9 +1382,9 @@
       }
 
       function gaugeCreator(root, measure, type) {
-        console.log(root);
-        console.log(measure);
-        console.log(type);
+        //console.log(root);
+        //console.log(measure);
+        //console.log(type);
 
         root.setThemes([am5themes_Animated.new(root)]);
 
