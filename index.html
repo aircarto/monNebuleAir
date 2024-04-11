@@ -527,7 +527,6 @@
           .done(function (data) {
             console.log("Sensor metadata:")
             console.log(data);
-            console.log("CheckToken: " + data[0].check_token);
 
 
             //si on recoit de la data de l'API ou si le token est bon
@@ -535,6 +534,8 @@
 
               document.querySelector("#room").value = data[0].room;
               document.querySelector("#height").value = data[0].etage;
+              console.log("CheckToken: " + data[0].check_token);
+
               
               console.log("Display map: "+ data[0].displayMap);
               console.log("Send sensor.community: " + data[0].SensorCommunity);
@@ -2357,7 +2358,7 @@
         myMarker.closePopup();
         map.setView([lat1, lng1], 18);
         myMarker.setLatLng([lat1, lng1]);
-        lat = lat1.toFixed(8);
+        lat = lat1.toFixed(8); //convert to a string with a specified number of decimal
         lon = lng1.toFixed(8);
         document.getElementById("lat").value = lat;
         document.getElementById("lon").value = lon;
@@ -2391,8 +2392,18 @@
             "&token=" +
             token,
           success: function (result) {
+            console.log("Addresse modifiée");
+
             openToast("Adresse modifiée.");
-            chooseAddr(lat, lng)
+
+            Swal.fire({
+                  title: "Géolocalisation",
+                  html: `La localisation du capteur a bien été mise à jour.`,
+                  icon: "success"
+                  })
+
+            chooseAddr(lat, lng); //attention avec cette fonction !!
+          
           },
         }).fail(function () {
           console.log("Error while posting data to Aircarto API");
@@ -2482,10 +2493,11 @@
       }
 
       function openToast(message) {
+        console.log("Showing message toast");
+
         let toastDiv = document.getElementById("messageToast");
         document.getElementById("message").innerText = message;
         let toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastDiv);
-        console.log("Showing message toast");
         toastBootstrap.show();
       }
 
