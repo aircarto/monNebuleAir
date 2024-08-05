@@ -401,7 +401,7 @@
 
           <!-- SENSOR.COMMUNITY-->
 
-          <div class="row" style="margin-top: 20px">
+          <div class="row" style="margin-top: 20px; display: none;">
             <div class="col-sm-12">
               <div class="card">
                 <div class="card-body">
@@ -423,6 +423,7 @@
               </div>
             </div>
           </div>
+          
           <!-- LOGOUT BUTTON -->
 
           <div class="row" style="margin-top: 20px">
@@ -546,12 +547,14 @@
               } else {
                 document.querySelector("#show").checked = false;
               }
-
+              
+              
               if (data[0].SensorCommunity) {
                 document.querySelector("#sc").checked = true;
               } else {
                 document.querySelector("#sc").checked = false;
               }
+              
 
               const timestamp_UTC = new Date(data[0].time); // ATTENTION HEURE LOCALE POUR NEBULEAIR
               const timestamp_current = Date.now();
